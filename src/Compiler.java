@@ -30,7 +30,7 @@ public class Compiler {
           nextToken();
           if(token == ')') {
             nextToken();
-            // call statementBlock function
+            stmtBlock();
           }
           else
             error();
@@ -47,14 +47,57 @@ public class Compiler {
     return decl;
   }
   
-  public StatementBlock stmtBlock(){
+  public void variableDeclaration(){
+    
+  }
+  
+  public void variable(){
+    
+  }
+  
+  public void type(){
+    
+  }
+  
+  public void standardType(){
+    
+  }
+  
+  public void arrayType(){
+    
+  }
+    
+  public void identifier(){
+    
+  }
+  
+  public void stmtBlock(){
+    
+  }
+  
+  public void statement(){
+    
+  }
+  
+  public void ifStatement(){
+    
+  }
+  
+  public void whileStatement(){
+    
+  }
+  
+  public void breakStatement(){
+    
+  }
+  
+  public void printStatement(){
     
   }
     
   public void nextToken() {
-    while(tokenPos < input.length && input[tokenPos] == ' ') {
+    while(tokenPos < input.length && input[tokenPos] == ' ')
       tokenPos++;
-    }
 
     if(tokenPos >= input.length)
       token = '\0';
