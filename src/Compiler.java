@@ -3,6 +3,7 @@
  * @author Vitor
  */
 import AST.*;
+import java.util.ArrayList;
 
 public class Compiler {
   private char []input;
@@ -10,18 +11,15 @@ public class Compiler {
   private int  tokenPos;
 
   public Program compile(char []pInput) {
-    Declaration decl;
     input = pInput;
     tokenPos = 0;
     nextToken();
 
-    decl = declaration();
-    
-    return new Program(decl);
+    return new Program(declaration());
   }
     
-  public Declaration declaration(){
-    Declaration decl = null;
+  public StatementBlock declaration(){
+    StatementBlock stmtBlock = null;
     if(token == 'v') {
       nextToken();
       if(token == 'm') {
@@ -30,7 +28,7 @@ public class Compiler {
           nextToken();
           if(token == ')') {
             nextToken();
-            stmtBlock();
+            stmtBlock = stmtBlock();
           }
           else
             error();
@@ -44,54 +42,137 @@ public class Compiler {
     else
       error();
 
-    return decl;
+    return stmtBlock;
   }
   
-  public void variableDeclaration(){
+  public void variableDeclaration() {
+    ArrayList<Variable> variables = new ArrayList<>();
     
+    while(token != 'i' || token != 'd' || token != 'c'){
+      variables.add(variable());
+    }
   }
   
-  public void variable(){
+  public Variable variable() {  
+    type();
+    Identifier ident = identifier();
     
+    nextToken();
+    if(token != ';')
+      error();
+    
+    return new Variable(varType, ident);
   }
   
-  public void type(){
+  public void type() {
+    if(token == 'i' || token == 'c' || token == 'd')
+      nextToken();
     
+    if(token == '['){
+      nextToken();
+      if(token == ']')
+        nextToken();
+      else
+        error();
+    }
   }
   
-  public void standardType(){
-    
-  }
-  
-  public void arrayType(){
-    
-  }
-    
-  public void identifier(){
-    
-  }
-  
-  public void stmtBlock(){
-    
-  }
-  
-  public void statement(){
-    
-  }
-  
-  public void ifStatement(){
-    
-  }
-  
-  public void whileStatement(){
+  public void standardType() {
     
   }
   
-  public void breakStatement(){
+  public void arrayType() {
     
   }
   
-  public void printStatement(){
+  public StatementBlock stmtBlock() {
+    if(token == '{') {
+      nextToken();
+      variableDeclaration();
+      statement();
+    }
+    else
+      error();
+    
+    return new StatementBlock();
+  }
+  
+  public void statement() {
+    switch(token) {
+      case 'f':
+        ifStatement();
+      case 'w':
+        whileStatement();
+      case 'b':
+        breakStatement();
+      case 'p':
+        printStatement();
+      default:
+        expression();
+    }
+  }
+  
+  public void ifStatement() {
+    
+  }
+  
+  public void whileStatement() {
+    
+  }
+  
+  public void breakStatement() {
+    
+  }
+  
+  public void printStatement() {
+    
+  }
+  
+  public void expression() {
+    
+  }
+  
+  public void simpleExpression() {
+    
+  }
+  
+  public void term() {
+    
+  }
+  
+  public void factor() {
+    
+  }
+  
+  public void leftValue() {
+    
+  }
+  
+  public void identifier() {
+    
+  }
+  
+  public void relationalOperator() {
+    
+  }
+  
+  public void addOperator() {
+    
+  }
+  
+  public void multiplicationOperator() {
+    
+  }
+  
+  public void unary() {
+    
+  }
+  
+  public void digit() {
+    
+  }
+  
+  public void letter() {
     
   }
     
@@ -105,6 +186,7 @@ public class Compiler {
       token = input[tokenPos];
       tokenPos++;
     }
+    System.out.print(" " + token + " ");
   }
     
   public void error() {

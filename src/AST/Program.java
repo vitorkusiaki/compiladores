@@ -5,9 +5,9 @@ package AST;
  * @author Vitor
  */
 public class Program {
-  private final Declaration declaration;
+  private final StatementBlock stmtBlock;
 
-  public Program(Declaration decl){
-    this.declaration = decl;
+  public Program(StatementBlock stmtBlock){
+    this.stmtBlock = stmtBlock;
   }
 }
