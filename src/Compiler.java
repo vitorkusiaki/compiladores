@@ -56,6 +56,7 @@ public class Compiler {
 
     Variable var = new Variable(type, identifier);
     vars.add(var);
+    nextToken();
   }
 
   public Type type() {
@@ -74,29 +75,31 @@ public class Compiler {
   }
 
   public StatementBlock stmtBlock() {
-    StatementBlock stmtBlock = new StatementBlock(vars, statements);
     if(token == '{') {
       nextToken();
       ArrayList<Variable> vars = variableDeclaration();
-      statement();
+      ArrayList<Statement> statements = ArrayList<Statement>();
+      while(token == 'f' || token == 'w' || token == 'b' || token == 'p') {
+        statement(statements);
+      }
       if(token != '}') {
         error();
       }
     } else
       error();
-    return stmtBlock;
+    return new StatementBlock(vars, statements);
   }
 
-  public Statement statement() {
+  public void statement(ArrayList<Statement> statements) {
     switch(token) {
       case 'f':
-        ifStatement();
+        statements.add(ifStatement());
       case 'w':
-        whileStatement();
+        statements.add(whileStatement());
       case 'b':
         breakStatement();
       case 'p':
-        printStatement();
+        statements.add(printStatement());
       default:
         expression();
         nextToken();
