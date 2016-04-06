@@ -1,9 +1,8 @@
 package AST;
 
-/**
- *
- * @author vitor
- */
 public class StandardType extends Type {
-  
+
+  public StandardType(String type) {
+    super(type);
+  }
 }

@@ -64,13 +64,17 @@ public class Compiler {
 
   // I believe there's the need for Type Super Class with StdType and ArrayType
   // subclasses.
-  public char type() {
-    char type = token;
+  public Type type() {
+    char t = token;
     nextToken();
     if(token == '[') {
       nextToken();
       if(token != ']')
         error();
+
+      Type type = new ArrayType(type);
+    } else {
+      Type type = new StandardType(type);
     }
     return type;
   }

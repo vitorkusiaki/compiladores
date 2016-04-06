@@ -1,9 +1,9 @@
 package AST;
 
-/**
- *
- * @author vitor
- */
-public class ArrayType extends Type {
-  
+public class ArrayType extends StandardType {
+  private char type;
+
+  public ArrayType(char type) {
+    super(type + "[]");
+  }
 }
