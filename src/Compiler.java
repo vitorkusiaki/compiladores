@@ -1,7 +1,3 @@
-/**
- *
- * @author Vitor
- */
 import AST.*;
 
 public class Compiler {
@@ -38,7 +34,7 @@ public class Compiler {
     }
     else
       error();
-    Program decl = new Program(stmtBlock);
+    Program decl = new Program(stmtBlock());
     return decl;
   }
 
@@ -51,8 +47,8 @@ public class Compiler {
   }
 
   public void variable(ArrayList<Variable> vars) {
-    type = type();
-    identifier = identifier();
+    Type type = type();
+    String identifier = identifier();
 
     nextToken();
     if(token != ';')
@@ -62,8 +58,6 @@ public class Compiler {
     vars.add(var);
   }
 
-  // I believe there's the need for Type Super Class with StdType and ArrayType
-  // subclasses.
   public Type type() {
     char t = token;
     nextToken();
@@ -79,21 +73,21 @@ public class Compiler {
     return type;
   }
 
-  public void stmtBlock() {
+  public StatementBlock stmtBlock() {
     StatementBlock stmtBlock = new StatementBlock(vars, statements);
     if(token == '{') {
       nextToken();
-      variableDeclaration();
+      ArrayList<Variable> vars = variableDeclaration();
       statement();
       if(token != '}') {
         error();
       }
-    }
-    else
+    } else
       error();
+    return stmtBlock;
   }
 
-  public void statement() {
+  public Statement statement() {
     switch(token) {
       case 'f':
         ifStatement();
@@ -111,28 +105,32 @@ public class Compiler {
     }
   }
 
-  public void ifStatement() {
+  public IfStatement ifStatement() {
     nextToken();
     if(token == '(') {
       nextToken();
-      expression();
+      Expression expression = expression();
       nextToken();
+      // Then part begins.
       if(token == '{') {
         nextToken();
+        ArrayList<Statement> thenStatements = new ArrayList<Statement>();
         // How to detect expression inside statement here?
         // If it detects any letter besides the reserved ones should it loop?
         while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
-          statement();
+          thenStatements.add(statement());
         nextToken();
         if(token != '}')
           error();
         nextToken();
+        // Else part begins
         if(token == 'e') {
           nextToken();
+          ArrayList<Statement> elseStatements = new ArrayList<Statement>();
           if(token == '{') {
             nextToken();
             while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
-              statement();
+              elseStatements.add(statement());
             nextToken();
             if(token != '}')
               error();
@@ -146,20 +144,25 @@ public class Compiler {
     }
     else
       error();
+
+    return new IfStatement(expression, thenStatements, elseStatements);
   }
 
-  public void whileStatement() {
+  public WhileStatement whileStatement() {
     nextToken();
+    // Expression block
     if(token == '(') {
       nextToken();
-      expression();
+      Expression expression = expression();
       nextToken();
       if(token == ')') {
         nextToken();
+        // Statements block
         if(token == '{') {
           nextToken();
+          ArrayList<Statement> statements = new ArrayList<Statement>();
           while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
-            statement();
+            statements.add(statement());
           nextToken();
           if(token != '}')
             error();
@@ -172,6 +175,8 @@ public class Compiler {
     }
     else
       error();
+
+    return new WhileStatement(expression, statements);
   }
 
   public void breakStatement() {
@@ -180,13 +185,14 @@ public class Compiler {
       error();
   }
 
-  public void printStatement() {
+  public PrintStatement printStatement() {
     nextToken();
+    ArrayList<Expression> expressions = new ArrayList<Expression>();
     if(token == '(') {
-      expression();
+      expressions.add(expression());
       nextToken();
       while(token == ',') {
-        expression();
+        expressions.add(expression())
         nextToken();
       }
       nextToken();
@@ -195,6 +201,8 @@ public class Compiler {
     }
     else
       error();
+
+    return new PrintStatement(expressions);
   }
 
   public void expression() {
