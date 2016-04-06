@@ -9,14 +9,14 @@ public class Compiler {
   private char token;
   private int  tokenPos;
 
-  public void compile(char []pInput) {
+  public Program compile(char []pInput) {
     input = pInput;
     tokenPos = 0;
     nextToken();
-    declaration();
+    return declaration();
   }
 
-  public void declaration() {
+  public Program declaration() {
     if(token == 'v') {
       nextToken();
       if(token == 'm') {
@@ -25,8 +25,7 @@ public class Compiler {
           nextToken();
           if(token == ')') {
             nextToken();
-            stmtBlock();
-            variableDeclaration();
+            StatementBlock stmtblock = stmtBlock();
           }
           else
             error();
@@ -39,35 +38,45 @@ public class Compiler {
     }
     else
       error();
+    Program decl = new Program(stmtBlock);
+    return decl;
   }
 
-  public void variableDeclaration() {
+  public ArrayList<Variable> variableDeclaration() {
+    ArrayList<Variable> vars = new ArrayList<Variable>();
     while(token == 'i' || token == 'd' || token == 'c'){
-      variable();
+      variable(vars);
     }
+    return vars;
   }
 
-  public void variable() {
-    type();
-    identifier();
+  public void variable(ArrayList<Variable> vars) {
+    type = type();
+    identifier = identifier();
 
     nextToken();
     if(token != ';')
       error();
+
+    Variable var = new Variable(type, identifier);
+    vars.add(var);
   }
 
-  public void type() {
+  // I believe there's the need for Type Super Class with StdType and ArrayType
+  // subclasses.
+  public char type() {
+    char type = token;
     nextToken();
     if(token == '[') {
       nextToken();
-      if(token == ']')
-        nextToken();
-      else
+      if(token != ']')
         error();
     }
+    return type;
   }
 
   public void stmtBlock() {
+    StatementBlock stmtBlock = new StatementBlock(vars, statements);
     if(token == '{') {
       nextToken();
       variableDeclaration();
