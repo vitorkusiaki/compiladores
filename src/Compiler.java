@@ -1,4 +1,5 @@
 import AST.*;
+import java.util.ArrayList;
 
 public class Compiler {
   private char []input;
@@ -47,74 +48,86 @@ public class Compiler {
   }
 
   public void variable(ArrayList<Variable> vars) {
+    String ident = " ";
     Type type = type();
-    String identifier = identifier();
+    identifier();
 
     nextToken();
     if(token != ';')
       error();
 
-    Variable var = new Variable(type, identifier);
+    Variable var = new Variable(type, ident);
     vars.add(var);
+    nextToken();
   }
 
   public Type type() {
-    char t = token;
+    char letter = token;
+    Type type;
+
     nextToken();
     if(token == '[') {
       nextToken();
       if(token != ']')
         error();
 
-      Type type = new ArrayType(type);
-    } else {
-      Type type = new StandardType(type);
+      type = new ArrayType(letter);
     }
+    else
+      type = new StandardType(letter);
+
     return type;
   }
 
   public StatementBlock stmtBlock() {
-    StatementBlock stmtBlock = new StatementBlock(vars, statements);
+    ArrayList<Variable> vars = null;
+    Statement stmt = null;
     if(token == '{') {
       nextToken();
-      ArrayList<Variable> vars = variableDeclaration();
-      statement();
+      vars = variableDeclaration();
+      stmt = statement();
       if(token != '}') {
         error();
       }
     } else
       error();
-    return stmtBlock;
+    return new StatementBlock(vars, stmt);
   }
 
   public Statement statement() {
+    Statement stmt = null;
     switch(token) {
       case 'f':
-        ifStatement();
+        stmt = ifStatement();
       case 'w':
-        whileStatement();
+        stmt = whileStatement();
       case 'b':
-        breakStatement();
+        stmt = breakStatement();
       case 'p':
-        printStatement();
+        stmt = printStatement();
       default:
         expression();
         nextToken();
         if(token != ';')
           error();
     }
+
+    return stmt;
   }
 
   public IfStatement ifStatement() {
+    ArrayList<Statement> thenStatements = new ArrayList<>() ;
+    ArrayList<Statement> elseStatements = new ArrayList<>();
+    Expression expression = null;
+
     nextToken();
     if(token == '(') {
       nextToken();
-      Expression expression = expression();
+      expression = expression();
       nextToken();
       // Then part begins.
       if(token == '{') {
         nextToken();
-        ArrayList<Statement> thenStatements = new ArrayList<Statement>();
         // How to detect expression inside statement here?
         // If it detects any letter besides the reserved ones should it loop?
         while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
@@ -126,7 +139,6 @@ public class Compiler {
         // Else part begins
         if(token == 'e') {
           nextToken();
-          ArrayList<Statement> elseStatements = new ArrayList<Statement>();
           if(token == '{') {
             nextToken();
             while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
@@ -149,18 +161,20 @@ public class Compiler {
   }
 
   public WhileStatement whileStatement() {
+    ArrayList<Statement> statements = new ArrayList<>();
+    Expression expression = null;
+
     nextToken();
     // Expression block
     if(token == '(') {
       nextToken();
-      Expression expression = expression();
+      expression = expression();
       nextToken();
       if(token == ')') {
         nextToken();
         // Statements block
         if(token == '{') {
           nextToken();
-          ArrayList<Statement> statements = new ArrayList<Statement>();
           while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
             statements.add(statement());
           nextToken();
@@ -179,20 +193,23 @@ public class Compiler {
     return new WhileStatement(expression, statements);
   }
 
-  public void breakStatement() {
+  public BreakStatement breakStatement() {
     nextToken();
     if(token != ';')
       error();
+
+    return new BreakStatement();
   }
 
   public PrintStatement printStatement() {
+    ArrayList<Expression> expressions = new ArrayList<>();
+
     nextToken();
-    ArrayList<Expression> expressions = new ArrayList<Expression>();
     if(token == '(') {
       expressions.add(expression());
       nextToken();
       while(token == ',') {
-        expressions.add(expression())
+        expressions.add(expression());
         nextToken();
       }
       nextToken();
@@ -205,13 +222,15 @@ public class Compiler {
     return new PrintStatement(expressions);
   }
 
-  public void expression() {
+  public Expression expression() {
     simpleExpression();
 
     if(token == '=' || token == '#' || token == '<' || token == '>') {
       relationalOperator();
       expression();
     }
+
+    return new Expression();
   }
 
   // SimExpr ::= [Unary] Term { AddOp Term }
