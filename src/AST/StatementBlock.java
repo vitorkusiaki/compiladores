@@ -1,11 +1,10 @@
 package AST;
-
-import java.util.*;
+import java.util.ArrayList;
 
 public class StatementBlock {
 
-  private ArrayList<Variable> vars;
-  private ArrayList<Statement> statements;
+  final private ArrayList<Variable> vars;
+  final private ArrayList<Statement> statements;
 
   public StatementBlock(ArrayList<Variable> vars, ArrayList<Statement> statements) {
     this.vars = vars;

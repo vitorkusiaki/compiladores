@@ -1,7 +1,7 @@
 package AST;
 
 public abstract class Type {
-  private String type;
+  final private String type;
 
   public Type(String type) {
     this.type = type;

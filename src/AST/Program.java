@@ -1,9 +1,5 @@
 package AST;
 
-/**
- *
- * @author Vitor
- */
 public class Program {
   private final StatementBlock stmtBlock;
 
