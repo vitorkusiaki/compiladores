@@ -1,122 +1,155 @@
 import AST.*;
-import java.util.ArrayList;
+import java.util.*;
+import Lexer.*;
+import java.io.*;
 
 public class Compiler {
-  private char []input;
-  private char token;
-  private int  tokenPos;
+    private Hashtable<String, Variable> symbolTable;
+    private Lexer lexer;
+    private CompilerError error;
 
-  public Program compile(char []pInput) {
-    input = pInput;
-    tokenPos = 0;
-    nextToken();
-    return declaration();
-  }
+    public Program compile(char []input, PrintWriter outError) {
+        symbolTable = new Hashtable<String, Variable>();
+        error = new CompilerError(outError);
+        lexer = new Lexer(input, error);
+        error.setLexer(lexer);
 
-  public Program declaration() {
-    if(token == 'v') {
-      nextToken();
-      if(token == 'm') {
-        nextToken();
-        if(token == '(') {
-          nextToken();
-          if(token == ')') {
-            nextToken();
-            StatementBlock stmtblock = stmtBlock();
-          }
-          else
-            error();
+        lexer.nextToken();
+        return declaration();
+    }
+
+    public Program declaration() {
+        // Decl ::= 'void' 'main' '(' ')' StmtBlock
+        if(lexer.token != Symbol.VOID)
+            error.signal("'void' expected");
+        lexer.nextToken();
+
+        if(lexer.token != Symbol.MAIN)
+            error.signal("'main' expected");
+        lexer.nextToken();
+
+        if(lexer.token != Symbol.LEFTPAR)
+            error.signal("'(' expected");
+        lexer.nextToken();
+
+        if(lexer.token != Symbol.RIGHTPAR)
+            error.signal("')' expected");
+        lexer.nextToken();
+
+        return new Program(stmtBlock());
+    }
+
+    public StatementBlock stmtBlock() {
+        // StmtBlock ::= '{' {VariableDecl} {Stmt} '}'
+        if(lexer.token != Symbol.LEFTBRACE)
+            error.signal("'{' expected");
+        lexer.nextToken();
+
+        ArrayList<Variable> vars = new ArrayList<Variable>();
+        ArrayList<Statement> statements = new ArrayList<Statement>();
+
+        vars = variableDeclaration();
+        statements = statementList();
+
+        if(lexer.token != Symbol.RIGHTBRACE)
+            error.signal("'}' expected");
+        lexer.nextToken();
+
+        return new StatementBlock(vars, statements);
+    }
+
+    public ArrayList<Variable> variableDeclaration() {
+        ArrayList<Variable> vars = new ArrayList<Variable>();
+        while(lexer.token == Symbol.INT ||
+            lexer.token == Symbol.DOUBLE ||
+            lexer.token == Symbol.CHAR) {
+                variable(vars);
+            }
+        return vars;
+    }
+
+    public void variable(ArrayList<Variable> vars) {
+        Type type = type();
+
+        if(lexer.token != Symbol.IDENT)
+            error.signal("Identifier expected");
+        String identifier = lexer.getStringValue();
+        lexer.nextToken();
+
+        if(symbolTable.get(identifier) != null)
+            error.signal("Variable " + identifier + " has already been declared!");
+
+        Variable var = new Variable(type, identifier);
+
+        symbolTable.put(identifier, var);
+        vars.add(var);
+
+        if(lexer.token != Symbol.SEMICOLON)
+            error.signal("';' expected");
+        lexer.nextToken();
+    }
+
+    public Type type() {
+        Type type;
+
+        switch(lexer.token) {
+            case INT:
+                type = Type.intType;
+                break;
+            case DOUBLE:
+                type = Type.doubleType;
+                break;
+            case CHAR:
+                type = Type.charType;
+                break;
+            default:
+                error.signal("Type expected");
+                type = null;
         }
-        else
-          error();
-      }
-      else
-        error();
-    }
-    else
-      error();
-    Program decl = new Program(stmtBlock());
-    return decl;
-  }
-
-  public ArrayList<Variable> variableDeclaration() {
-    ArrayList<Variable> vars = new ArrayList<Variable>();
-    while(token == 'i' || token == 'd' || token == 'c'){
-      variable(vars);
-    }
-    return vars;
-  }
-
-  public void variable(ArrayList<Variable> vars) {
-    String ident = " ";
-    Type type = type();
-    identifier();
-
-    nextToken();
-    if(token != ';')
-      error();
-
-    Variable var = new Variable(type, ident);
-    vars.add(var);
-    nextToken();
-  }
-
-  public Type type() {
-    char letter = token;
-    Type type;
-
-    nextToken();
-    if(token == '[') {
-      nextToken();
-      if(token != ']')
-        error();
-
-      type = new ArrayType(letter);
-    }
-    else
-      type = new StandardType(letter);
-
-    return type;
-  }
-
-  public StatementBlock stmtBlock() {
-    ArrayList<Variable> vars = null;
-    Statement stmt = null;
-    if(token == '{') {
-      nextToken();
-      vars = variableDeclaration();
-      stmt = statement();
-      if(token != '}') {
-        error();
-      }
-    } else
-      error();
-    return new StatementBlock(vars, stmt);
-  }
-
-  public Statement statement() {
-    Statement stmt = null;
-    switch(token) {
-      case 'f':
-        stmt = ifStatement();
-      case 'w':
-        stmt = whileStatement();
-      case 'b':
-        stmt = breakStatement();
-      case 'p':
-        stmt = printStatement();
-      default:
-        expression();
-        nextToken();
-        if(token != ';')
-          error();
+        lexer.nextToken();
+        return type;
     }
 
-    return stmt;
+    public ArrayList<Statement> statementList() {
+        ArrayList<Statement> statements = new ArrayList<Statement>();
+
+        while(lexer.token == Symbol.IDENT ||
+            lexer.token == Symbol.IF ||
+            lexer.token == Symbol.WHILE ||
+            lexer.token == Symbol.BREAK ||
+            lexer.token == Symbol.PRINT) {
+                statements.add(statement());
+            }
+    }
+
+    public Statement statement() {
+        switch(lexer.token) {
+            case IF:
+                lexer.nextToken();
+                return ifStatement();
+                break;
+            case WHILE:
+                lexer.nextToken();
+                return whileStatement();
+                break;
+            case BREAK:
+                lexer.nextToken();
+                return breakStatement();
+                break;
+            case PRINT:
+                lexer.nextToken();
+                return printStatement();
+                break;
+            case IDENT:
+                return expression();
+                break;
+            default:
+                error.signal("Statement expected");
+        }
   }
 
   public IfStatement ifStatement() {
-    ArrayList<Statement> thenStatements = new ArrayList<>() ;
+    ArrayList<Statement> thenStatements = new ArrayList<>();
     ArrayList<Statement> elseStatements = new ArrayList<>();
     Expression expression = null;
 
@@ -268,86 +301,5 @@ public class Compiler {
       if(token != ']')
         error();
     }
-  }
-
-  public void identifier() {
-    letter();
-    nextToken();
-
-    while(('A' <= token && 'z' >= token) || (token >= '0' && token <= '9')) {
-      if('A' <= token && 'z' >= token)
-        letter();
-      if(token >= 0 && token <= 9)
-        digit();
-    }
-  }
-
-  public void relationalOperator() {
-    if(token == '=' || token == '#' || token == '<' || token == '>')
-      nextToken();
-    else
-      error();
-  }
-
-  public void addOperator() {
-    if(token == '+' || token == '-')
-      nextToken();
-    else
-      error();
-  }
-
-  public void multiplicationOperator() {
-    if(token == '*' || token == '/' || token == '%')
-      nextToken();
-    else
-      error();
-  }
-
-  public void unary() {
-    if(token == '+' || token == '-' || token == '!') {
-      nextToken();
-    }
-    else
-      error();
-  }
-
-  public void digit() {
-    if(token >= '0' && token <= '9')
-      nextToken();
-    else
-      error();
-  }
-
-  public void letter() {
-    if('A' <= token && 'z' >= token)
-      nextToken();
-    else
-      error();
-  }
-
-  public void nextToken() {
-    while(tokenPos < input.length && input[tokenPos] == ' ')
-      tokenPos++;
-
-    if(tokenPos >= input.length)
-      token = '\0';
-    else {
-      token = input[tokenPos];
-      tokenPos++;
-    }
-    System.out.print(" " + token + " ");
-  }
-
-  public void error() {
-    if ( tokenPos == 0 )
-     tokenPos = 1;
-    else
-     if ( tokenPos >= input.length )
-      tokenPos = input.length;
-
-    String strInput = new String( input, tokenPos - 1, input.length - tokenPos + 1 );
-    String strError = "Error at \"" + strInput + "\"";
-    System.out.println( strError );
-    throw new RuntimeException(strError);
   }
 }
