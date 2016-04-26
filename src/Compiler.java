@@ -237,22 +237,23 @@ public class Compiler {
   }
 
   public PrintStatement printStatement() {
-    ArrayList<Expression> expressions = new ArrayList<>();
+    ArrayList<ExpressionStatement> expressions = new ArrayList<>();
 
     lexer.nextToken();
-    if(lexer.token == Symbol.LEFTPAR) {
+    if(lexer.token != Symbol.LEFTPAR)
+      error.signal("'(' expected");
+
+    expressions.add(expression());
+    lexer.nextToken();
+
+    while(lexer.token == Symbol.COMMA) {
       expressions.add(expression());
       lexer.nextToken();
-      while(lexer.token == Symbol.COMMA) {
-        expressions.add(expression());
-        lexer.nextToken();
-      }
-      lexer.nextToken();
-      if(lexer.token != Symbol.RIGHTPAR)
-        error.signal();
     }
-    else
-      error.signal();
+
+    lexer.nextToken();
+    if(lexer.token != Symbol.RIGHTPAR)
+        error.signal("')' expected");
 
     return new PrintStatement(expressions);
   }
