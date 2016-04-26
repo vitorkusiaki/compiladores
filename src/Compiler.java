@@ -294,7 +294,7 @@ public class Compiler {
     ArrayList<AddOperation> operations = new ArrayList<>();
 
     if(isUnary()){
-      unaryOp = lexer.getStringValue;
+      unaryOp = lexer.getStringValue();
       lexer.nextToken();
     }
 
