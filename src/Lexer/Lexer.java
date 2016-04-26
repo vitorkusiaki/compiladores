@@ -66,6 +66,8 @@ public class Lexer {
         } else if(input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
             // Multi line comment found
             while(true) {
+                if(input[tokenPos] == '\n')
+                  lineNumber++;
                 if(input[tokenPos] == '*') {
                     tokenPos++;
                     if(input[tokenPos] == '/') {
@@ -75,6 +77,7 @@ public class Lexer {
                 }
                 tokenPos++;
             }
+            lineNumber++;
             nextToken();
         } else if(Character.isLetter(c)) {
             StringBuffer ident = new StringBuffer();
