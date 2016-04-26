@@ -356,7 +356,48 @@ public class Compiler {
     return false;
   }
 
-  public void factor() {
+
+  public Factor factor() {
+    LValue lvalue = leftValue();
+
+    // 'readInteger' '(' ')' | 'readDouble' '(' ')' | 'readChar' '(' ')'
+    if(lexer.token == Symbol.READINTEGER ||
+       lexer.token == Symbol.READDOUBLE  ||
+       lexer.token == Symbol.READCHAR) {
+      String currentToken = lexer.token;
+
+      lexer.nextToken();
+      if(lexer.token != Symbol.LEFTPAR)
+        error.signal("'(' expected");
+
+      lexer.nextToken();
+      if(lexer.token != Symbol.RIGHTPAR)
+        error.signal("')' expected");
+
+      return new ReadTypeFactor(lvalue, currentToken);
+    }
+    // Number
+    else if(lexer.token == Symbol.PLUS  ||
+            lexer.token == Symbol.MINUS ||
+            lexer.token == Symbol.NUMBER)
+      return new NumberFactor(lvalue, number());
+    // '(' Expr ')'
+    else if(lexer.token == Symbol.LEFTPAR){
+      lexer.nextToken();
+      ExpressionStatement expr = expression();
+
+      lexer.nextToken();
+      if(lexer.token == Symbol.RIGHTPAR)
+        error.signal("')' expected");
+
+      return new ExpressionFactor(lvalue, expr);
+    }
+    // Expr
+    else if(lexer.token == Symbol.IDENT)
+      return new CompositeFactor(lvalue, leftValue());
+    // LValue
+    else
+      return new ExpressionFactor(lvalue, expression());
   }
 
   public LValue leftValue() {
