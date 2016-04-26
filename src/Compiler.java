@@ -263,7 +263,7 @@ public class Compiler {
     String relOp = null;
     ExpressionStatement expr = null;
 
-    if(relationalOperator(lexer.token)){
+    if(isRelationalOperator()){
       relOp = lexer.token;
       lexer.nextToken();
       expr = expression();
@@ -272,26 +272,30 @@ public class Compiler {
   }
 
   // SimExpr ::= [Unary] Term { AddOp Term }
-  public void simpleExpression() {
-    if(lexer.token == Symbol.PLUS  ||
-       lexer.token == Symbol.MINUS ||
-       lexer.token == Symbol.NOT)
-      unary();
+  public SimpleExpression simpleExpression() {
+    String unaryOp = null;
+    Term term = null;
+    ArrayList<Operation> operations = new ArrayList<>();
 
-    term();
-
-    while(lexer.token == Symbol.PLUS  || lexer.token == Symbol.MINUS) {
-      addOperator();
-      term();
+    if(isUnary()){
+      unaryOp = lexer.token;
+      lexer.nextToken();
     }
+
+    term = term();
+
+    while(isAddOperator()) {
+      operations.add(new Operation(lexer.token, term());
+      lexer.nextToken();
+    }
+
+    return new SimpleExpression(unaryOp, term, operations);
   }
 
   public void term() {
     factor();
 
-    while(lexer.token == Symbol.MULT ||
-          lexer.token == Symbol.DIV  ||
-          lexer.token == Symbol.MOD) {
+    while(multiplicationOperator(lexer.token)) {
       multiplicationOperator();
       factor();
     }
