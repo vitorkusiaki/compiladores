@@ -260,70 +260,82 @@ public class Compiler {
 
   public ExpressionStatement expression() {
     SimpleExpression simExpr = simpleExpression();
+    String relOp = null;
+    ExpressionStatement expr = null;
 
-    if(relationalOperator(lexer.token))
-      expression();
-
-    if(lexer.token == Symbol.EQ   ||
-       lexer.token == Symbol.NEQ  ||
-       lexer.token == Symbol.LT   ||
-       lexer.token == Symbol.LTE  ||
-       lexer.token == Symbol.GT   ||
-       lexer.token == Symbol.GTE) {
-
-      RelationalOperator relOp = relationalOperator();
-      ExpressionStatement expr = expression();
+    if(isRelationalOperator()){
+      relOp = lexer.token;
+      lexer.nextToken();
+      expr = expression();
     }
     return new ExpressionStatement(simExpr, relOp, expr);
   }
 
-    // SimExpr ::= [Unary] Term { AddOp Term }
-  public void simpleExpression() {
+  // SimExpr ::= [Unary] Term { AddOp Term }
+  public SimpleExpression simpleExpression() {
+    String unaryOp = null;
+    Term term = null;
+    ArrayList<AddOperation> operations = new ArrayList<>();
+
+    if(isUnary()){
+      unaryOp = lexer.token;
+      lexer.nextToken();
+    }
+
+    term = term();
+
+    while(isAddOperator()) {
+      operations.add(new AddOperation(lexer.token, term()));
+      lexer.nextToken();
+    }
+
+    return new SimpleExpression(unaryOp, term, operations);
+  }
+
+  public Term term() {
+    Factor factor = factor();
+    ArrayList<MultOperation> operations = new ArrayList<>();
+
+    while(isMultiplicationOperator(lexer.token)) {
+      operations.add(new MultOperation(lexer.token, factor()));
+      lexer.nextToken();
+    }
+
+    return new Term(factor, operations);
+  }
+
+  public Boolean isRelationalOperator() {
+    if(lexer.token == Symbol.EQ  ||
+       lexer.token == Symbol.NEQ ||
+       lexer.token == Symbol.LT  ||
+       lexer.token == Symbol.LTE ||
+       lexer.token == Symbol.GT  ||
+       lexer.token == Symbol.GTE)
+      return true;
+    return false;
+  }
+
+  public Boolean isUnary() {
     if(lexer.token == Symbol.PLUS  ||
        lexer.token == Symbol.MINUS ||
-       lexer.token == Symbol.NOT)
-      unary();
-
-    term();
-
-    while(lexer.token == Symbol.PLUS  || lexer.token == Symbol.MINUS) {
-      addOperator();
-      term();
-    }
-  }
-
-  public void term() {
-    factor();
-
-    while(lexer.token == Symbol.MULT ||
-          lexer.token == Symbol.DIV  ||
-          lexer.token == Symbol.MOD) {
-      multiplicationOperator();
-      factor();
-    }
-  }
-
-  public Boolean relationalOperator(c) {
-    if(c == Symbol.EQ || c == Symbol.NEQ || c == Symbol.LT ||
-    c == Symbol.LTE || c == Symbol.GT || c == Symbol.GTE)
+       lexer.token == Symbol.OR)
       return true;
     return false;
   }
 
-  public Boolean unary(c) {
-    if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
+  public Boolean isAddOperator() {
+    if(lexer.token == Symbol.PLUS  ||
+       lexer.token == Symbol.MINUS ||
+       lexer.token == Symbol.OR)
       return true;
     return false;
   }
 
-  public Boolean addOperator(c) {
-    if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
-      return true;
-    return false;
-  }
-
-  public Boolean multiplicationOperator(c) {
-    if(c == Symbol.MULT || c == Symbol.DIV || c == Symbol.MOD || c == Symbol.AND)
+  public Boolean isMultiplicationOperator() {
+    if(lexer.token == Symbol.MULT ||
+       lexer.token == Symbol.DIV  ||
+       lexer.token == Symbol.MOD  ||
+       lexer.token == Symbol.AND)
       return true;
     return false;
   }
@@ -369,7 +381,7 @@ public class Compiler {
       error.signal("Number expected");
 
     StringBuffer number = new StringBuffer();
-    number.append(lexer.nextToken());
+    number.append(lexer.token);
 
     if(lexer.token == Symbol.DOT) {
       number.append(lexer.token);
@@ -380,9 +392,9 @@ public class Compiler {
 
       number.append(lexer.getNumberValue());
 
-      return new DoubleNumber(Double.parseDouble(number));
+      return new DoubleNumber(Double.parseDouble(number) * multiplier);
     } else {
-      return new IntNumber(Integer.parseInt(number));
+      return new IntNumber(Integer.parseInt(number) * multiplier);
     }
   }
 }
