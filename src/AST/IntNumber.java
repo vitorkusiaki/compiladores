@@ -6,4 +6,8 @@ abstract public class IntNumber extends Number {
   public IntNumber(int number) {
     this.number = number;
   }
+
+  public int getNumber() {
+    return number;
+  }
 }
