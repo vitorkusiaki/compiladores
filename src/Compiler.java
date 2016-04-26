@@ -271,7 +271,7 @@ public class Compiler {
        lexer.token == Symbol.GT   ||
        lexer.token == Symbol.GTE) {
 
-      RelationalOperator relOp = relationalOperator();
+      String relOp = relationalOperator();
       ExpressionStatement expr = expression();
     }
     return new ExpressionStatement(simExpr, relOp, expr);
