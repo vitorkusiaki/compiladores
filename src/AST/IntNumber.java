@@ -1,6 +1,6 @@
 package AST;
 
-abstract public class IntNumber extends Number {
+public class IntNumber extends Number {
   private int number;
 
   public IntNumber(int number) {
