@@ -275,7 +275,7 @@ public class Compiler {
   public SimpleExpression simpleExpression() {
     String unaryOp = null;
     Term term = null;
-    ArrayList<Operation> operations = new ArrayList<>();
+    ArrayList<AddOperation> operations = new ArrayList<>();
 
     if(isUnary()){
       unaryOp = lexer.token;
@@ -285,20 +285,23 @@ public class Compiler {
     term = term();
 
     while(isAddOperator()) {
-      operations.add(new Operation(lexer.token, term());
+      operations.add(new AddOperation(lexer.token, term()));
       lexer.nextToken();
     }
 
     return new SimpleExpression(unaryOp, term, operations);
   }
 
-  public void term() {
-    factor();
+  public Term term() {
+    Factor factor = factor();
+    ArrayList<MultOperation> operations = new ArrayList<>();
 
     while(isMultiplicationOperator(lexer.token)) {
-      multiplicationOperator();
-      factor();
+      operations.add(new MultOperation(lexer.token, factor()));
+      lexer.nextToken();
     }
+
+    return new Term(factor, operations);
   }
 
   public Boolean isRelationalOperator() {
