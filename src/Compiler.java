@@ -154,7 +154,7 @@ public class Compiler {
       error.signal("'(' expected");
     lexer.nextToken();
 
-    Expression expression = expression();
+    ExpressionStatement expression = expression();
 
     // Then part
     if(lexer.token != Symbol.RIGHTPAR)
@@ -192,7 +192,7 @@ public class Compiler {
 
   public WhileStatement whileStatement() {
     ArrayList<Statement> statements = new ArrayList<>();
-    Expression expression = null;
+    ExpressionStatement expression = null;
 
     lexer.nextToken();
     // Expression block
