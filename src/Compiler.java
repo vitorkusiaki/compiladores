@@ -260,24 +260,18 @@ public class Compiler {
 
   public ExpressionStatement expression() {
     SimpleExpression simExpr = simpleExpression();
+    String relOp = null;
+    ExpressionStatement expr = null;
 
-    if(relationalOperator(lexer.token))
-      expression();
-
-    if(lexer.token == Symbol.EQ   ||
-       lexer.token == Symbol.NEQ  ||
-       lexer.token == Symbol.LT   ||
-       lexer.token == Symbol.LTE  ||
-       lexer.token == Symbol.GT   ||
-       lexer.token == Symbol.GTE) {
-
-      String relOp = relationalOperator();
-      ExpressionStatement expr = expression();
+    if(relationalOperator(lexer.token)){
+      relOp = lexer.token;
+      lexer.nextToken();
+      expr = expression();
     }
     return new ExpressionStatement(simExpr, relOp, expr);
   }
 
-    // SimExpr ::= [Unary] Term { AddOp Term }
+  // SimExpr ::= [Unary] Term { AddOp Term }
   public void simpleExpression() {
     if(lexer.token == Symbol.PLUS  ||
        lexer.token == Symbol.MINUS ||
