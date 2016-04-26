@@ -343,15 +343,58 @@ public class Compiler {
   public void factor() {
   }
 
-  public void leftValue() {
+  public LValue leftValue() {
     if(lexer.token != Symbol.IDENT)
       error.signal("Identifier expected");
 
-    if(token == '[') {
-      expression();
+    String identifier = lexer.getStringValue();
+    ExpressionStatement expression = null;
 
-      if(token != ']')
-        error();
+    lexer.nextToken();
+
+    if(lexer.token == Symbol.LEFTBRACKET) {
+      lexer.nextToken();
+      expression = expression();
+
+      if(lexer.token != Symbol.RIGHTBRACKET)
+        error.signal("']' expected");
+    }
+
+    return new LValue(identifier, expression);
+  }
+
+  public Number number() {
+    Integer multiplier = 1;
+
+    if(lexer.token != Symbol.PLUS ||
+    lexer.token != Symbol.MINUS ||
+    lexer.token != Symbol.NUMBER)
+      error.signal("Number expected");
+
+    if(lexer.token == Symbol.MINUS) {
+      multiplier = -1;
+      lexer.nextToken();
+    } else if(lexer.token == Symbol.PLUS)
+      lexer.nextToken();
+
+    if(lexer.token != Symbol.NUMBER)
+      error.signal("Number expected");
+
+    StringBuffer number = new StringBuffer();
+    number.append(lexer.token);
+
+    if(lexer.token == Symbol.DOT) {
+      number.append(lexer.token);
+      lexer.nextToken();
+
+      if(lexer.token != Symbol.NUMBER)
+        error.signal("Number expected");
+
+      number.append(lexer.getNumberValue());
+
+      return new DoubleNumber(Double.parseDouble(number) * multiplier);
+    } else {
+      return new IntNumber(Integer.parseInt(number) * multiplier);
     }
   }
 }
