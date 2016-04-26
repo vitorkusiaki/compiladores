@@ -260,70 +260,79 @@ public class Compiler {
 
   public ExpressionStatement expression() {
     SimpleExpression simExpr = simpleExpression();
+    String relOp = null;
+    ExpressionStatement expr = null;
 
-    if(relationalOperator(lexer.token))
-      expression();
-
-    if(lexer.token == Symbol.EQ   ||
-       lexer.token == Symbol.NEQ  ||
-       lexer.token == Symbol.LT   ||
-       lexer.token == Symbol.LTE  ||
-       lexer.token == Symbol.GT   ||
-       lexer.token == Symbol.GTE) {
-
-      String relOp = relationalOperator();
-      ExpressionStatement expr = expression();
+    if(isRelationalOperator()){
+      relOp = lexer.token;
+      lexer.nextToken();
+      expr = expression();
     }
     return new ExpressionStatement(simExpr, relOp, expr);
   }
 
-    // SimExpr ::= [Unary] Term { AddOp Term }
-  public void simpleExpression() {
-    if(lexer.token == Symbol.PLUS  ||
-       lexer.token == Symbol.MINUS ||
-       lexer.token == Symbol.NOT)
-      unary();
+  // SimExpr ::= [Unary] Term { AddOp Term }
+  public SimpleExpression simpleExpression() {
+    String unaryOp = null;
+    Term term = null;
+    ArrayList<Operation> operations = new ArrayList<>();
 
-    term();
-
-    while(lexer.token == Symbol.PLUS  || lexer.token == Symbol.MINUS) {
-      addOperator();
-      term();
+    if(isUnary()){
+      unaryOp = lexer.token;
+      lexer.nextToken();
     }
+
+    term = term();
+
+    while(isAddOperator()) {
+      operations.add(new Operation(lexer.token, term());
+      lexer.nextToken();
+    }
+
+    return new SimpleExpression(unaryOp, term, operations);
   }
 
   public void term() {
     factor();
 
-    while(lexer.token == Symbol.MULT ||
-          lexer.token == Symbol.DIV  ||
-          lexer.token == Symbol.MOD) {
+    while(isMultiplicationOperator(lexer.token)) {
       multiplicationOperator();
       factor();
     }
   }
 
-  public Boolean relationalOperator(c) {
-    if(c == Symbol.EQ || c == Symbol.NEQ || c == Symbol.LT ||
-    c == Symbol.LTE || c == Symbol.GT || c == Symbol.GTE)
+  public Boolean isRelationalOperator() {
+    if(lexer.token == Symbol.EQ  ||
+       lexer.token == Symbol.NEQ ||
+       lexer.token == Symbol.LT  ||
+       lexer.token == Symbol.LTE ||
+       lexer.token == Symbol.GT  ||
+       lexer.token == Symbol.GTE)
       return true;
     return false;
   }
 
-  public Boolean unary(c) {
-    if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
+  public Boolean isUnary() {
+    if(lexer.token == Symbol.PLUS  ||
+       lexer.token == Symbol.MINUS ||
+       lexer.token == Symbol.OR)
       return true;
     return false;
   }
 
-  public Boolean addOperator(c) {
-    if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
+  public Boolean isAddOperator() {
+    if(lexer.token == Symbol.PLUS  ||
+       lexer.token == Symbol.MINUS ||
+       lexer.token == Symbol.OR)
       return true;
     return false;
   }
 
-  public Boolean multiplicationOperator(c) {
-    if(c == Symbol.MULT || c == Symbol.DIV || c == Symbol.MOD || c == Symbol.AND)
+  public Boolean isMultiplicationOperator() {
+    if(lexer.token == Symbol.MULT ||
+       lexer.token == Symbol.DIV  ||
+       lexer.token == Symbol.MOD  ||
+       lexer.token == Symbol.AND)
       return true;
     return false;
   }
