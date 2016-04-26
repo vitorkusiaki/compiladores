@@ -108,6 +108,22 @@ public class Compiler {
         type = null;
     }
     lexer.nextToken();
+
+    if(lexer.token == Symbol.LEFTBRACKET) {
+      IntNumber length = number();
+
+      if(length <= 0)
+        error.signal("Invalid array length: " + length);
+
+      lexer.nextToken();
+      if(lexer.token != Symbol.RIGHTBRACKET)
+        error.signal("']' expected");
+
+      type.setLength(length);
+    } else {
+      type.setLength(null);
+    }
+
     return type;
   }
 
