@@ -120,6 +120,7 @@ public class Compiler {
             lexer.token == Symbol.PRINT) {
                 statements.add(statement());
             }
+        return statements;
     }
 
     public Statement statement() {
@@ -142,6 +143,8 @@ public class Compiler {
                 break;
             case IDENT:
                 return expression();
+                if(lexer.token != Symbol.SEMICOLON)
+                    error.signal("';' expected");
                 break;
             default:
                 error.signal("Statement expected");
@@ -149,56 +152,50 @@ public class Compiler {
     }
 
     public IfStatement ifStatement() {
-        ArrayList<Statement> thenStatements = new ArrayList<>();
-        ArrayList<Statement> elseStatements = new ArrayList<>();
-
         if(unary(lexer.token))
             lexer.nextToken();
 
         if(lexer.token != Symbol.LEFTPAR)
             error.signal("'(' expected");
+        lexer.nextToken();
 
-    nextToken();
-    if(token == '(') {
-      nextToken();
-      expression = expression();
-      nextToken();
-      // Then part begins.
-      if(token == '{') {
-        nextToken();
-        // How to detect expression inside statement here?
-        // If it detects any letter besides the reserved ones should it loop?
-        while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
-          thenStatements.add(statement());
-        nextToken();
-        if(token != '}')
-          error();
-        nextToken();
-        // Else part begins
-        if(token == 'e') {
-          nextToken();
-          if(token == '{') {
-            nextToken();
-            while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
-              elseStatements.add(statement());
-            nextToken();
-            if(token != '}')
-              error();
-          }
-          else
-            error();
+        Expression expression = expression();
+
+        // Then part
+        if(lexer.token != Symbol.RIGHTPAR)
+            error.signal("')' expected");
+        lexer.nextToken();
+
+        if(lexer.token != Symbol.LEFTBRACE)
+            error.signal("'{' expected");
+        lexer.nextToken();
+
+        ArrayList<Statement> thenStatements = statementList();
+
+        if(lexer.token != Symbol.RIGHTBRACE)
+            error.signal("'}' expected");
+        lexer.nextToken();
+
+        ArrayList<Statement> elseStatements = null;
+
+        // If there's an Else part.
+        if(lexer.token == Symbol.ELSE) {
+            lexer.nextToken();
+
+            if(lexer.token != Symbol.LEFTBRACE)
+                error.signal("'{' expected");
+            lexer.nextToken();
+
+            ArrayList<Statement> elseStatements = statementList();
+
+            if(lexer.token != Symbol.RIGHTBRACE)
+                error.signal("'}' expected");
+            lexer.nextToken();
         }
-      }
-      else
-        error();
+        return new IfStatement(expression, thenStatements, elseStatements);
     }
-    else
-      error();
 
-    return new IfStatement(expression, thenStatements, elseStatements);
-  }
-
-  public WhileStatement whileStatement() {
+    public WhileStatement whileStatement() {
     ArrayList<Statement> statements = new ArrayList<>();
     Expression expression = null;
 
@@ -260,8 +257,11 @@ public class Compiler {
     return new PrintStatement(expressions);
   }
 
-  public Expression expression() {
-    simpleExpression();
+    public Expression expression() {
+        simpleExpression();
+
+        if(relationalOperator(lexer.token))
+            expression();
 
     if(token == '=' || token == '#' || token == '<' || token == '>') {
       relationalOperator();
@@ -293,24 +293,47 @@ public class Compiler {
     }
   }
 
-  public void factor() {
+    public Boolean relationalOperator(c) {
+        if(c == Symbol.EQ || c == Symbol.NEQ || c == Symbol.LT ||
+        c == Symbol.LTE || c == Symbol.GT || c == Symbol.GTE)
+            return true;
+        return false;
+    }
 
-  }
-
-  public Boolean unary(c) {
+    public Boolean addOperator(c) {
         if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
+            return true;
+        return false;
+    }
+
+    public Boolean multiplicationOperator(c) {
+        if(c == Symbol.MULT || c == Symbol.DIV || c == Symbol.MOD ||
+        c == Symbol.AND)
+            return true;
+        return false;
+    }
+
+    public Boolean unary(c) {
+        if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.NOT)
             return true;
         return false;
   }
 
-  public void leftValue() {
-    identifier();
+  public void factor() {
 
-    if(token == '['){
-      expression();
-
-      if(token != ']')
-        error();
-    }
   }
+
+    public void leftValue() {
+        if(lexer.token != Symbol.IDENT)
+            error.signal("Identifier expected");
+
+
+
+        if(token == '['){
+            expression();
+
+        if(token != ']')
+            error();
+        }
+    }
 }
