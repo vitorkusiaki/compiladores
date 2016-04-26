@@ -4,11 +4,11 @@ import java.util.ArrayList;
 public class SimpleExpression {
   final private String unary;
   final private Term term;
-  final private ArrayList<Operation> operation;
+  final private ArrayList<AddOperation> operations;
 
-  public ExpressionStatement(String unary, Term term, ArrayList<Operation> operation) {
+  public SimpleExpression(String unary, Term term, ArrayList<AddOperation> operations) {
     this.unary = unary;
     this.term = term;
-    this.operation = operation;
+    this.operations = operations;
   }
 }

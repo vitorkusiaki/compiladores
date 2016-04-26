@@ -294,7 +294,7 @@ public class Compiler {
 
   public Term term() {
     Factor factor = factor();
-    ArrayList<MultOperations> operations = new ArrayList<>();
+    ArrayList<MultOperation> operations = new ArrayList<>();
 
     while(isMultiplicationOperator(lexer.token)) {
       operations.add(new MultOperation(lexer.token, factor()));
