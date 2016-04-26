@@ -154,7 +154,7 @@ public class Compiler {
       error.signal("'(' expected");
     lexer.nextToken();
 
-    Expression expression = expression();
+    ExpressionStatement expression = expression();
 
     // Then part
     if(lexer.token != Symbol.RIGHTPAR)
@@ -192,37 +192,36 @@ public class Compiler {
 
   public WhileStatement whileStatement() {
     ArrayList<Statement> statements = new ArrayList<>();
-    Expression expression = null;
+    ExpressionStatement expression = null;
 
     lexer.nextToken();
     // Expression block
-    if(lexer.token == Symbol.LEFTPAR) {
-      lexer.nextToken();
-      expression = expression();
-      lexer.nextToken();
-      if(lexer.token == Symbol.RIGHTPAR) {
-        lexer.nextToken();
-        // Statements block
-        if(lexer.token == Symbol.LEFTBRACE) {
-          lexer.nextToken();
-          while(lexer.token == Symbol.IDENT ||
-                lexer.token == Symbol.IF    ||
-                lexer.token == Symbol.WHILE ||
-                lexer.token == Symbol.BREAK ||
-                lexer.token == Symbol.PRINT)
-            statements.add(statement());
-          lexer.nextToken();
-          if(lexer.token != Symbol.RIGHTBRACE)
-            error.signal("'}' expected");
-        }
-        else
-          error.signal("'{' expected");
-      }
-      else
-        error.signal("')' expected");
-    }
-    else
+    if(lexer.token != Symbol.LEFTPAR)
       error.signal("'(' expected");
+
+    lexer.nextToken();
+    expression = expression();
+    lexer.nextToken();
+
+    if(lexer.token != Symbol.RIGHTPAR)
+      error.signal("')' expected");
+
+    // Statements block
+    lexer.nextToken();
+    if(lexer.token != Symbol.LEFTBRACE)
+      error.signal("'{' expected");
+
+    lexer.nextToken();
+    while(lexer.token == Symbol.IDENT ||
+          lexer.token == Symbol.IF    ||
+          lexer.token == Symbol.WHILE ||
+          lexer.token == Symbol.BREAK ||
+          lexer.token == Symbol.PRINT)
+      statements.add(statement());
+
+    lexer.nextToken();
+    if(lexer.token != Symbol.RIGHTBRACE)
+      error.signal("'}' expected");
 
     return new WhileStatement(expression, statements);
   }
@@ -238,28 +237,29 @@ public class Compiler {
   }
 
   public PrintStatement printStatement() {
-    ArrayList<Expression> expressions = new ArrayList<>();
+    ArrayList<ExpressionStatement> expressions = new ArrayList<>();
 
     lexer.nextToken();
-    if(lexer.token == Symbol.LEFTPAR) {
+    if(lexer.token != Symbol.LEFTPAR)
+      error.signal("'(' expected");
+
+    expressions.add(expression());
+    lexer.nextToken();
+
+    while(lexer.token == Symbol.COMMA) {
       expressions.add(expression());
       lexer.nextToken();
-      while(lexer.token == Symbol.COMMA) {
-        expressions.add(expression());
-        lexer.nextToken();
-      }
-      lexer.nextToken();
-      if(lexer.token != Symbol.RIGHTPAR)
-        error.signal();
     }
-    else
-      error.signal();
+
+    lexer.nextToken();
+    if(lexer.token != Symbol.RIGHTPAR)
+        error.signal("')' expected");
 
     return new PrintStatement(expressions);
   }
 
-  public Expression expression() {
-    simpleExpression();
+  public ExpressionStatement expression() {
+    SimpleExpression simExpr = simpleExpression();
 
     if(relationalOperator(lexer.token))
       expression();
@@ -271,10 +271,10 @@ public class Compiler {
        lexer.token == Symbol.GT   ||
        lexer.token == Symbol.GTE) {
 
-      relationalOperator();
-      expression();
+      RelationalOperator relOp = relationalOperator();
+      ExpressionStatement expr = expression();
     }
-    return new Expression();
+    return new ExpressionStatement(simExpr, relOp, expr);
   }
 
     // SimExpr ::= [Unary] Term { AddOp Term }
