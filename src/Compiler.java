@@ -94,13 +94,13 @@ public class Compiler {
     Type type;
 
     switch(lexer.token) {
-      case Symbol.INT:
+      case INT:
         type = Type.intType;
         break;
-      case Symbol.DOUBLE:
+      case DOUBLE:
         type = Type.doubleType;
         break;
-      case Symbol.CHAR:
+      case CHAR:
         type = Type.charType;
         break;
       default:
@@ -110,12 +110,14 @@ public class Compiler {
     lexer.nextToken();
 
     if(lexer.token == Symbol.LEFTBRACKET) {
-      IntNumber length = number();
-
-      if(length.getNumber() <= 0)
-        error.signal("Invalid array length: " + length);
-
       lexer.nextToken();
+
+      if(lexer.token != Symbol.NUMBER)
+        error.signal("Number Expected");
+
+      Integer length = lexer.getNumberValue();
+      lexer.nextToken();
+
       if(lexer.token != Symbol.RIGHTBRACKET)
         error.signal("']' expected");
 
@@ -160,6 +162,7 @@ public class Compiler {
       default:
         error.signal("Statement expected");
     }
+    return null;
   }
 
   public IfStatement ifStatement() {
@@ -197,7 +200,7 @@ public class Compiler {
         error.signal("'{' expected");
       lexer.nextToken();
 
-      ArrayList<Statement> elseStatements = statementList();
+      elseStatements = statementList();
 
       if(lexer.token != Symbol.RIGHTBRACE)
         error.signal("'}' expected");
@@ -245,7 +248,7 @@ public class Compiler {
   public BreakStatement breakStatement() {
     if(lexer.token != Symbol.BREAK)
       error.signal("'break' expected");
-    nextToken();
+    lexer.nextToken();
     if(lexer.token != Symbol.SEMICOLON)
       error.signal("';' expected");
 
@@ -289,7 +292,7 @@ public class Compiler {
 
   // SimExpr ::= [Unary] Term { AddOp Term }
   public SimpleExpression simpleExpression() {
-    String unaryOp = null;
+    Character unaryOp = null;
     Term term = null;
     ArrayList<AddOperation> operations = new ArrayList<>();
 
@@ -313,7 +316,7 @@ public class Compiler {
     ArrayList<MultOperation> operations = new ArrayList<>();
 
     while(isMultiplicationOperator()) {
-      operations.add(new MultOperation(lexer.getCharValue(), factor()));
+      operations.add(new MultOperation(Character.toString(lexer.getCharValue()), factor()));
       lexer.nextToken();
     }
 
@@ -359,12 +362,24 @@ public class Compiler {
 
   public Factor factor() {
     LValue lvalue = leftValue();
+    String currentToken = null;
 
     // 'readInteger' '(' ')' | 'readDouble' '(' ')' | 'readChar' '(' ')'
     if(lexer.token == Symbol.READINTEGER ||
        lexer.token == Symbol.READDOUBLE  ||
        lexer.token == Symbol.READCHAR) {
-      String currentToken = lexer.token;
+
+      switch(lexer.token) {
+        case READINTEGER:
+          currentToken = "readInteger";
+          break;
+        case READDOUBLE:
+          currentToken = "readDouble";
+          break;
+        case READCHAR:
+          currentToken = "readChar";
+          break;
+      }
 
       lexer.nextToken();
       if(lexer.token != Symbol.LEFTPAR)
@@ -420,7 +435,7 @@ public class Compiler {
     return new LValue(identifier, expression);
   }
 
-  public Number number() {
+  public Numberino number() {
     Integer multiplier = 1;
 
     if(lexer.token != Symbol.PLUS ||
@@ -449,9 +464,9 @@ public class Compiler {
 
       number.append(lexer.getNumberValue());
 
-      return new DoubleNumber(Double.parseDouble(number) * multiplier);
+      return new DoubleNumber(Double.parseDouble(number.toString()) * multiplier);
     } else {
-      return new IntNumber(Integer.parseInt(number) * multiplier);
+      return new IntNumber(Integer.parseInt(number.toString()) * multiplier);
     }
   }
 }

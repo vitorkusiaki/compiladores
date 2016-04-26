@@ -1,5 +1,9 @@
 package AST;
 
 abstract public class Factor {
-  protected final LValue lvalue;
+  protected LValue lvalue;
+
+  public Factor(LValue lvalue) {
+    this.lvalue = lvalue;
+  }
 }

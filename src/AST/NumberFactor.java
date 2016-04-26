@@ -1,8 +1,10 @@
-public class NumberFactor extends Factor {
-  private final Number number;
+package AST;
 
-  public NumberFactor(Lvalue lvalue, Number number) {
-    this.lvalue = lvalue;
+public class NumberFactor extends Factor {
+  private final Numberino number;
+
+  public NumberFactor(LValue lvalue, Numberino number) {
+    super(lvalue);
     this.number = number;
   }
 }

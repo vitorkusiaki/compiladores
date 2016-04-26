@@ -1,8 +1,10 @@
+package AST;
+
 public class ReadTypeFactor extends Factor {
   private final String readType;
 
-  public ReadTypeFactor(Lvalue lvalue, String readType) {
-    this.lvalue = lvalue;
+  public ReadTypeFactor(LValue lvalue, String readType) {
+    super(lvalue);
     this.readType = readType;
   }
 }

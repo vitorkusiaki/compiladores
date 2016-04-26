@@ -96,6 +96,7 @@ public class Lexer {
                 tokenPos++;
             }
             token = Symbol.NUMBER;
+            numberValue = Integer.parseInt(number.toString());
         } else {
             tokenPos++;
             charValue = c;

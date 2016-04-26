@@ -1,8 +1,10 @@
-public class CompositeFactor extends Factor {
-  private final Lvalue rValue;
+package AST;
 
-  public CompositeFactor(Lvalue lvalue, Lvalue rValue) {
-    this.lvalue = lvalue;
-    this.rvalue = rvalue;
+public class CompositeFactor extends Factor {
+  private final LValue rValue;
+
+  public CompositeFactor(LValue lvalue, LValue rValue) {
+    super(lvalue);
+    this.rValue = rValue;
   }
 }

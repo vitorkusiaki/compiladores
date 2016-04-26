@@ -8,4 +8,8 @@ public class Variable {
     this.type = type;
     this.identifier = identifier;
   }
+
+  public Type getType() {
+    return type;
+  }
 }
