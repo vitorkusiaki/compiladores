@@ -4,9 +4,9 @@ import java.util.ArrayList;
 public class StatementBlock {
 
   final private ArrayList<Variable> vars;
-  final private Statement statement;
+  final private ArrayList<Statement> statement;
 
-  public StatementBlock(ArrayList<Variable> vars, Statement statement) {
+  public StatementBlock(ArrayList<Variable> vars, ArrayList<Statement> statement) {
     this.vars = vars;
     this.statement = statement;
   }

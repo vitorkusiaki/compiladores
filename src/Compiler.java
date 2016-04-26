@@ -143,19 +143,19 @@ public class Compiler {
 
   public Statement statement() {
     switch(lexer.token) {
-      case Symbol.IF:
+      case IF:
         lexer.nextToken();
         return ifStatement();
-      case Symbol.WHILE:
+      case WHILE:
         lexer.nextToken();
         return whileStatement();
-      case Symbol.BREAK:
+      case BREAK:
         lexer.nextToken();
         return breakStatement();
-      case Symbol.PRINT:
+      case PRINT:
         lexer.nextToken();
         return printStatement();
-      case Symbol.IDENT:
+      case IDENT:
         return expression();
       default:
         error.signal("Statement expected");
@@ -163,7 +163,7 @@ public class Compiler {
   }
 
   public IfStatement ifStatement() {
-    if(unary(lexer.token))
+    if(isUnary())
       lexer.nextToken();
 
     if(lexer.token != Symbol.LEFTPAR)
@@ -280,7 +280,7 @@ public class Compiler {
     ExpressionStatement expr = null;
 
     if(isRelationalOperator()){
-      relOp = lexer.token;
+      relOp = lexer.getStringValue();
       lexer.nextToken();
       expr = expression();
     }
@@ -294,14 +294,14 @@ public class Compiler {
     ArrayList<AddOperation> operations = new ArrayList<>();
 
     if(isUnary()){
-      unaryOp = lexer.token;
+      unaryOp = lexer.getCharValue();
       lexer.nextToken();
     }
 
     term = term();
 
     while(isAddOperator()) {
-      operations.add(new AddOperation(lexer.token, term()));
+      operations.add(new AddOperation(lexer.getStringValue(), term()));
       lexer.nextToken();
     }
 
@@ -312,8 +312,8 @@ public class Compiler {
     Factor factor = factor();
     ArrayList<MultOperation> operations = new ArrayList<>();
 
-    while(isMultiplicationOperator(lexer.token)) {
-      operations.add(new MultOperation(lexer.token, factor()));
+    while(isMultiplicationOperator()) {
+      operations.add(new MultOperation(lexer.getCharValue(), factor()));
       lexer.nextToken();
     }
 
@@ -355,6 +355,7 @@ public class Compiler {
       return true;
     return false;
   }
+
 
   public Factor factor() {
     LValue lvalue = leftValue();
@@ -437,10 +438,10 @@ public class Compiler {
       error.signal("Number expected");
 
     StringBuffer number = new StringBuffer();
-    number.append(lexer.token);
+    number.append(lexer.getNumberValue());
 
     if(lexer.token == Symbol.DOT) {
-      number.append(lexer.token);
+      number.append(lexer.getNumberValue());
       lexer.nextToken();
 
       if(lexer.token != Symbol.NUMBER)
