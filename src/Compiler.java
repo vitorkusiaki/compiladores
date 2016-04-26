@@ -331,15 +331,23 @@ public class Compiler {
   public void factor() {
   }
 
-  public void leftValue() {
+  public LValue leftValue() {
     if(lexer.token != Symbol.IDENT)
       error.signal("Identifier expected");
 
-    if(token == '[') {
-      expression();
+    String identifier = lexer.getStringValue();
+    ExpressionStatement expression = null;
 
-      if(token != ']')
-        error();
+    lexer.nextToken();
+
+    if(lexer.token == Symbol.LEFTBRACKET) {
+      lexer.nextToken();
+      expression = expression();
+
+      if(lexer.token != Symbol.RIGHTBRACKET)
+        error.signal("']' expected");
     }
+    
+    return new LValue(identifier, expression);
   }
 }
