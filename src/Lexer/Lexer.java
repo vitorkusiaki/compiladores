@@ -102,9 +102,11 @@ public class Lexer {
             switch(c) {
                 case '+':
                     token = Symbol.PLUS;
+                    stringValue = "+";
                     break;
                 case '-':
                     token = Symbol.MINUS;
+                    stringValue = "-";
                     break;
                 case '*':
                     token = Symbol.MULT;
