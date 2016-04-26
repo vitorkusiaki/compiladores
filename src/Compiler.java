@@ -258,8 +258,8 @@ public class Compiler {
     return new PrintStatement(expressions);
   }
 
-  public Expression expression() {
-    simpleExpression();
+  public ExpressionStatement expression() {
+    SimpleExpression simExpr = simpleExpression();
 
     if(relationalOperator(lexer.token))
       expression();
@@ -271,10 +271,10 @@ public class Compiler {
        lexer.token == Symbol.GT   ||
        lexer.token == Symbol.GTE) {
 
-      relationalOperator();
-      expression();
+      RelationalOperator relOp = relationalOperator();
+      ExpressionStatement expr = expression();
     }
-    return new Expression();
+    return new ExpressionStatement(simExpr, relOp, expr);
   }
 
     // SimExpr ::= [Unary] Term { AddOp Term }
