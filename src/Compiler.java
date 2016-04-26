@@ -295,33 +295,44 @@ public class Compiler {
   public void term() {
     factor();
 
-    while(multiplicationOperator(lexer.token)) {
+    while(isMultiplicationOperator(lexer.token)) {
       multiplicationOperator();
       factor();
     }
   }
 
-  public Boolean relationalOperator(c) {
-    if(c == Symbol.EQ || c == Symbol.NEQ || c == Symbol.LT ||
-    c == Symbol.LTE || c == Symbol.GT || c == Symbol.GTE)
+  public Boolean isRelationalOperator() {
+    if(lexer.token == Symbol.EQ  ||
+       lexer.token == Symbol.NEQ ||
+       lexer.token == Symbol.LT  ||
+       lexer.token == Symbol.LTE ||
+       lexer.token == Symbol.GT  ||
+       lexer.token == Symbol.GTE)
       return true;
     return false;
   }
 
-  public Boolean unary(c) {
-    if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
+  public Boolean isUnary() {
+    if(lexer.token == Symbol.PLUS  ||
+       lexer.token == Symbol.MINUS ||
+       lexer.token == Symbol.OR)
       return true;
     return false;
   }
 
-  public Boolean addOperator(c) {
-    if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
+  public Boolean isAddOperator() {
+    if(lexer.token == Symbol.PLUS  ||
+       lexer.token == Symbol.MINUS ||
+       lexer.token == Symbol.OR)
       return true;
     return false;
   }
 
-  public Boolean multiplicationOperator(c) {
-    if(c == Symbol.MULT || c == Symbol.DIV || c == Symbol.MOD || c == Symbol.AND)
+  public Boolean isMultiplicationOperator() {
+    if(lexer.token == Symbol.MULT ||
+       lexer.token == Symbol.DIV  ||
+       lexer.token == Symbol.MOD  ||
+       lexer.token == Symbol.AND)
       return true;
     return false;
   }
