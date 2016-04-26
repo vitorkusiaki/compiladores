@@ -91,7 +91,7 @@ public class Lexer {
                 token = value;
         } else if(Character.isDigit(c)) {
             StringBuffer number = new StringBuffer();
-            while ( Character.isDigit(input[tokenPos])) {
+            while(Character.isDigit(input[tokenPos])) {
                 number.append(input[tokenPos]);
                 tokenPos++;
             }
@@ -129,7 +129,7 @@ public class Lexer {
                         token = Symbol.GT;
                     break;
                 case '=':
-                    token = Symbol.ASSIGN;
+                    token = Symbol.EQ;
                     break;
                 case '[':
                     token = Symbol.LEFTBRACKET;
@@ -152,6 +152,12 @@ public class Lexer {
                 case ',':
                     token = Symbol.COMMA;
                     break;
+                case ':':
+                    if(input[tokenPos] == '=') {
+                        tokenPos++;
+                        token = Symbol.ASSIGN;
+                    } else
+                        error.signal("'=' expected");
                 case ';':
                     token = Symbol.SEMICOLON;
                     break;
