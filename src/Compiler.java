@@ -294,7 +294,7 @@ public class Compiler {
     ArrayList<AddOperation> operations = new ArrayList<>();
 
     if(isUnary()){
-      unaryOp = lexer.getStringValue();
+      unaryOp = lexer.getCharValue();
       lexer.nextToken();
     }
 
@@ -313,7 +313,7 @@ public class Compiler {
     ArrayList<MultOperation> operations = new ArrayList<>();
 
     while(isMultiplicationOperator()) {
-      operations.add(new MultOperation(lexer.getStringValue(), factor()));
+      operations.add(new MultOperation(lexer.getCharValue(), factor()));
       lexer.nextToken();
     }
 

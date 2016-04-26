@@ -98,6 +98,7 @@ public class Lexer {
             token = Symbol.NUMBER;
         } else {
             tokenPos++;
+            charValue = c;
             switch(c) {
                 case '+':
                     token = Symbol.PLUS;
@@ -118,15 +119,19 @@ public class Lexer {
                     if(input[tokenPos] == '=') {
                         tokenPos++;
                         token = Symbol.LTE;
+                        stringValue = "<=";
                     } else
                         token = Symbol.LT;
+                        stringValue = "<";
                     break;
                 case '>':
                     if(input[tokenPos] == '=') {
                         tokenPos++;
                         token = Symbol.GTE;
+                        stringValue = ">=";
                     } else
                         token = Symbol.GT;
+                        stringValue = ">";
                     break;
                 case '=':
                     token = Symbol.EQ;
@@ -156,6 +161,7 @@ public class Lexer {
                     if(input[tokenPos] == '=') {
                         tokenPos++;
                         token = Symbol.ASSIGN;
+                        stringValue = ":=";
                     } else
                         error.signal("'=' expected");
                 case ';':
@@ -168,6 +174,7 @@ public class Lexer {
                     if(input[tokenPos] == '=') {
                         tokenPos++;
                         token = Symbol.NEQ;
+                        stringValue = "!=";
                     } else
                         token = Symbol.NOT;
                     break;
@@ -175,6 +182,7 @@ public class Lexer {
                     if(input[tokenPos] == '&') {
                         tokenPos++;
                         token = Symbol.AND;
+                        stringValue = "&&";
                     } else
                         error.signal("& expected");
                     break;
@@ -182,6 +190,7 @@ public class Lexer {
                     if(input[tokenPos] == '|') {
                         tokenPos++;
                         token = Symbol.OR;
+                        stringValue = "||";
                     } else
                         error.signal("| expected");
                     break;
