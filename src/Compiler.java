@@ -112,7 +112,7 @@ public class Compiler {
     if(lexer.token == Symbol.LEFTBRACKET) {
       IntNumber length = number();
 
-      if(length <= 0)
+      if(length.getNumber() <= 0)
         error.signal("Invalid array length: " + length);
 
       lexer.nextToken();
