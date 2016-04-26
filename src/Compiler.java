@@ -4,196 +4,210 @@ import Lexer.*;
 import java.io.*;
 
 public class Compiler {
-    private Hashtable<String, Variable> symbolTable;
-    private Lexer lexer;
-    private CompilerError error;
+  private Hashtable<String, Variable> symbolTable;
+  private Lexer lexer;
+  private CompilerError error;
 
-    public Program compile(char []input, PrintWriter outError) {
-        symbolTable = new Hashtable<String, Variable>();
-        error = new CompilerError(outError);
-        lexer = new Lexer(input, error);
-        error.setLexer(lexer);
+  public Program compile(char []input, PrintWriter outError) {
+    symbolTable = new Hashtable<String, Variable>();
+    error = new CompilerError(outError);
+    lexer = new Lexer(input, error);
+    error.setLexer(lexer);
 
-        lexer.nextToken();
-        return declaration();
+    lexer.nextToken();
+    return declaration();
+  }
+
+  public Program declaration() {
+    // Decl ::= 'void' 'main' '(' ')' StmtBlock
+    if(lexer.token != Symbol.VOID)
+      error.signal("'void' expected");
+    lexer.nextToken();
+
+    if(lexer.token != Symbol.MAIN)
+      error.signal("'main' expected");
+    lexer.nextToken();
+
+    if(lexer.token != Symbol.LEFTPAR)
+      error.signal("'(' expected");
+    lexer.nextToken();
+
+    if(lexer.token != Symbol.RIGHTPAR)
+      error.signal("')' expected");
+    lexer.nextToken();
+
+    return new Program(stmtBlock());
+  }
+
+  public StatementBlock stmtBlock() {
+    // StmtBlock ::= '{' {VariableDecl} {Stmt} '}'
+    if(lexer.token != Symbol.LEFTBRACE)
+      error.signal("'{' expected");
+    lexer.nextToken();
+
+    ArrayList<Variable> vars = new ArrayList<Variable>();
+    ArrayList<Statement> statements = new ArrayList<Statement>();
+
+    vars = variableDeclaration();
+    statements = statementList();
+
+    if(lexer.token != Symbol.RIGHTBRACE)
+      error.signal("'}' expected");
+    lexer.nextToken();
+
+    return new StatementBlock(vars, statements);
+  }
+
+  public ArrayList<Variable> variableDeclaration() {
+    ArrayList<Variable> vars = new ArrayList<Variable>();
+    while(lexer.token == Symbol.INT ||
+      lexer.token == Symbol.DOUBLE ||
+      lexer.token == Symbol.CHAR) {
+      variable(vars);
+    }
+    return vars;
+  }
+
+  public void variable(ArrayList<Variable> vars) {
+    Type type = type();
+
+    if(lexer.token != Symbol.IDENT)
+      error.signal("Identifier expected");
+
+    String identifier = lexer.getStringValue();
+    lexer.nextToken();
+
+    if(symbolTable.get(identifier) != null)
+      error.signal("Variable '" + identifier + "' has already been declared!");
+
+    Variable var = new Variable(type, identifier);
+
+    symbolTable.put(identifier, var);
+    vars.add(var);
+
+    if(lexer.token != Symbol.SEMICOLON)
+      error.signal("';' expected");
+    lexer.nextToken();
+  }
+
+  public Type type() {
+    Type type;
+
+    switch(lexer.token) {
+      case Symbol.INT:
+        type = Type.intType;
+        break;
+      case Symbol.DOUBLE:
+        type = Type.doubleType;
+        break;
+      case Symbol.CHAR:
+        type = Type.charType;
+        break;
+      default:
+        error.signal("Type expected");
+        type = null;
+    }
+    lexer.nextToken();
+    return type;
+  }
+
+  public ArrayList<Statement> statementList() {
+    ArrayList<Statement> statements = new ArrayList<>();
+
+    while(lexer.token == Symbol.IDENT ||
+          lexer.token == Symbol.IF    ||
+          lexer.token == Symbol.WHILE ||
+          lexer.token == Symbol.BREAK ||
+          lexer.token == Symbol.PRINT) {
+      statements.add(statement());
     }
 
-    public Program declaration() {
-        // Decl ::= 'void' 'main' '(' ')' StmtBlock
-        if(lexer.token != Symbol.VOID)
-            error.signal("'void' expected");
-        lexer.nextToken();
+    return statements;
+  }
 
-        if(lexer.token != Symbol.MAIN)
-            error.signal("'main' expected");
+  public Statement statement() {
+    switch(lexer.token) {
+      case IF:
         lexer.nextToken();
-
-        if(lexer.token != Symbol.LEFTPAR)
-            error.signal("'(' expected");
+        return ifStatement();
+      case WHILE:
         lexer.nextToken();
-
-        if(lexer.token != Symbol.RIGHTPAR)
-            error.signal("')' expected");
+        return whileStatement();
+      case BREAK:
         lexer.nextToken();
-
-        return new Program(stmtBlock());
+        return breakStatement();
+      case PRINT:
+        lexer.nextToken();
+        return printStatement();
+      case IDENT:
+        return expression();
+      default:
+        error.signal("Statement expected");
     }
+  }
 
-    public StatementBlock stmtBlock() {
-        // StmtBlock ::= '{' {VariableDecl} {Stmt} '}'
-        if(lexer.token != Symbol.LEFTBRACE)
-            error.signal("'{' expected");
-        lexer.nextToken();
+  public IfStatement ifStatement() {
+    ArrayList<Statement> thenStatements = new ArrayList<>();
+    ArrayList<Statement> elseStatements = new ArrayList<>();
 
-        ArrayList<Variable> vars = new ArrayList<Variable>();
-        ArrayList<Statement> statements = new ArrayList<Statement>();
+    if(unary(lexer.token))
+      lexer.nextToken();
 
-        vars = variableDeclaration();
-        statements = statementList();
-
-        if(lexer.token != Symbol.RIGHTBRACE)
-            error.signal("'}' expected");
-        lexer.nextToken();
-
-        return new StatementBlock(vars, statements);
-    }
-
-    public ArrayList<Variable> variableDeclaration() {
-        ArrayList<Variable> vars = new ArrayList<Variable>();
-        while(lexer.token == Symbol.INT ||
-            lexer.token == Symbol.DOUBLE ||
-            lexer.token == Symbol.CHAR) {
-                variable(vars);
-            }
-        return vars;
-    }
-
-    public void variable(ArrayList<Variable> vars) {
-        Type type = type();
-
-        if(lexer.token != Symbol.IDENT)
-            error.signal("Identifier expected");
-        String identifier = lexer.getStringValue();
-        lexer.nextToken();
-
-        if(symbolTable.get(identifier) != null)
-            error.signal("Variable " + identifier + " has already been declared!");
-
-        Variable var = new Variable(type, identifier);
-
-        symbolTable.put(identifier, var);
-        vars.add(var);
-
-        if(lexer.token != Symbol.SEMICOLON)
-            error.signal("';' expected");
-        lexer.nextToken();
-    }
-
-    public Type type() {
-        Type type;
-
-        switch(lexer.token) {
-            case INT:
-                type = Type.intType;
-                break;
-            case DOUBLE:
-                type = Type.doubleType;
-                break;
-            case CHAR:
-                type = Type.charType;
-                break;
-            default:
-                error.signal("Type expected");
-                type = null;
-        }
-        lexer.nextToken();
-        return type;
-    }
-
-    public ArrayList<Statement> statementList() {
-        ArrayList<Statement> statements = new ArrayList<Statement>();
-
-        while(lexer.token == Symbol.IDENT ||
-            lexer.token == Symbol.IF ||
-            lexer.token == Symbol.WHILE ||
-            lexer.token == Symbol.BREAK ||
-            lexer.token == Symbol.PRINT) {
-                statements.add(statement());
-            }
-    }
-
-    public Statement statement() {
-        switch(lexer.token) {
-            case IF:
-                lexer.nextToken();
-                return ifStatement();
-                break;
-            case WHILE:
-                lexer.nextToken();
-                return whileStatement();
-                break;
-            case BREAK:
-                lexer.nextToken();
-                return breakStatement();
-                break;
-            case PRINT:
-                lexer.nextToken();
-                return printStatement();
-                break;
-            case IDENT:
-                return expression();
-                break;
-            default:
-                error.signal("Statement expected");
-        }
-    }
-
-    public IfStatement ifStatement() {
-        ArrayList<Statement> thenStatements = new ArrayList<>();
-        ArrayList<Statement> elseStatements = new ArrayList<>();
-
-        if(unary(lexer.token))
-            lexer.nextToken();
-
-        if(lexer.token != Symbol.LEFTPAR)
-            error.signal("'(' expected");
-
-    nextToken();
-    if(token == '(') {
-      nextToken();
+    lexer.nextToken();
+    if(lexer.token == Symbol.LEFTPAR) {
+      lexer.nextToken();
       expression = expression();
-      nextToken();
+      lexer.nextToken();
+
+      if(lexer.token == Symbol.RIGHTPAR){
+        lexer.nextToken();
+      }
+      else
+        error.signal("')' expected");
+
       // Then part begins.
-      if(token == '{') {
-        nextToken();
+      if(lexer.token == Symbol.LEFTBRACE) {
+        lexer.nextToken();
         // How to detect expression inside statement here?
         // If it detects any letter besides the reserved ones should it loop?
-        while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
+        while(lexer.token == Symbol.IDENT ||
+              lexer.token == Symbol.IF    ||
+              lexer.token == Symbol.WHILE ||
+              lexer.token == Symbol.BREAK ||
+              lexer.token == Symbol.PRINT)
           thenStatements.add(statement());
-        nextToken();
-        if(token != '}')
-          error();
-        nextToken();
-        // Else part begins
-        if(token == 'e') {
-          nextToken();
-          if(token == '{') {
-            nextToken();
-            while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
+
+        lexer.nextToken();
+
+        if(lexer.token != Symbol.RIGHTBRACE)
+          error.signal("'}' expected");
+
+        lexer.nextToken();
+          // Else part begins
+        if(lexer.token == Symbol.ELSE) {
+          lexer.nextToken();
+
+          if(lexer.token == Symbol.LEFTBRACE) {
+            lexer.nextToken();
+            while(lexer.token == Symbol.IDENT ||
+                  lexer.token == Symbol.IF    ||
+                  lexer.token == Symbol.WHILE ||
+                  lexer.token == Symbol.BREAK ||
+                  lexer.token == Symbol.PRINT)
               elseStatements.add(statement());
-            nextToken();
-            if(token != '}')
-              error();
+            lexer.nextToken();
+            if(lexer.token != Symbol.RIGHTBRACE)
+              error.signal("'}' expected");
           }
           else
-            error();
+            error.signal("'{' expected");
         }
       }
       else
-        error();
+        error.signal("'{' expected");
     }
     else
-      error();
+      error.signal("'(' expected");
 
     return new IfStatement(expression, thenStatements, elseStatements);
   }
@@ -202,39 +216,45 @@ public class Compiler {
     ArrayList<Statement> statements = new ArrayList<>();
     Expression expression = null;
 
-    nextToken();
+    lexer.nextToken();
     // Expression block
-    if(token == '(') {
-      nextToken();
+    if(lexer.token == Symbol.LEFTPAR) {
+      lexer.nextToken();
       expression = expression();
-      nextToken();
-      if(token == ')') {
-        nextToken();
+      lexer.nextToken();
+      if(lexer.token == Symbol.RIGHTPAR) {
+        lexer.nextToken();
         // Statements block
-        if(token == '{') {
-          nextToken();
-          while(token == 'f' || token == 'w' || token == 'b' || token == 'p')
+        if(lexer.token == Symbol.LEFTBRACE) {
+          lexer.nextToken();
+          while(lexer.token == Symbol.IDENT ||
+                lexer.token == Symbol.IF    ||
+                lexer.token == Symbol.WHILE ||
+                lexer.token == Symbol.BREAK ||
+                lexer.token == Symbol.PRINT)
             statements.add(statement());
-          nextToken();
-          if(token != '}')
-            error();
+          lexer.nextToken();
+          if(lexer.token != Symbol.RIGHTBRACE)
+            error.signal("'}' expected");
         }
         else
-          error();
+          error.signal("'{' expected");
       }
       else
-        error();
+        error.signal("')' expected");
     }
     else
-      error();
+      error.signal("'(' expected");
 
     return new WhileStatement(expression, statements);
   }
 
   public BreakStatement breakStatement() {
+    if(lexer.token != Symbol.BREAK)
+      error.signal("'break' expected");
     nextToken();
-    if(token != ';')
-      error();
+    if(lexer.token != Symbol.SEMICOLON)
+      error.signal("';' expected");
 
     return new BreakStatement();
   }
@@ -242,20 +262,20 @@ public class Compiler {
   public PrintStatement printStatement() {
     ArrayList<Expression> expressions = new ArrayList<>();
 
-    nextToken();
-    if(token == '(') {
+    lexer.nextToken();
+    if(lexer.token == Symbol.LEFTPAR) {
       expressions.add(expression());
-      nextToken();
-      while(token == ',') {
+      lexer.nextToken();
+      while(lexer.token == Symbol.COMMA) {
         expressions.add(expression());
-        nextToken();
+        lexer.nextToken();
       }
-      nextToken();
-      if(token != ')')
-        error();
+      lexer.nextToken();
+      if(lexer.token != Symbol.RIGHTPAR)
+        error.signal();
     }
     else
-      error();
+      error.signal();
 
     return new PrintStatement(expressions);
   }
@@ -263,22 +283,29 @@ public class Compiler {
   public Expression expression() {
     simpleExpression();
 
-    if(token == '=' || token == '#' || token == '<' || token == '>') {
+    if(lexer.token == Symbol.EQ   ||
+       lexer.token == Symbol.NEQ  ||
+       lexer.token == Symbol.LT   ||
+       lexer.token == Symbol.LTE  ||
+       lexer.token == Symbol.GT   ||
+       lexer.token == Symbol.GTE) {
+
       relationalOperator();
       expression();
     }
-
     return new Expression();
   }
 
-  // SimExpr ::= [Unary] Term { AddOp Term }
+    // SimExpr ::= [Unary] Term { AddOp Term }
   public void simpleExpression() {
-    if(token == '+' || token == '-' || token == '!')
+    if(lexer.token == Symbol.PLUS  ||
+       lexer.token == Symbol.MINUS ||
+       lexer.token == Symbol.NOT)
       unary();
 
     term();
 
-    while(token == '+' || token == '-') {
+    while(lexer.token == Symbol.PLUS  || lexer.token == Symbol.MINUS) {
       addOperator();
       term();
     }
@@ -287,7 +314,9 @@ public class Compiler {
   public void term() {
     factor();
 
-    while(token == '*' || token == '/' || token == '%') {
+    while(lexer.token == Symbol.MULT ||
+          lexer.token == Symbol.DIV  ||
+          lexer.token == Symbol.MOD) {
       multiplicationOperator();
       factor();
     }
@@ -298,19 +327,19 @@ public class Compiler {
   }
 
   public Boolean unary(c) {
-        if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
-            return true;
-        return false;
+    if(c == Symbol.PLUS || c == Symbol.MINUS || c == Symbol.OR)
+      return true;
+    return false;
   }
 
   public void leftValue() {
     identifier();
 
-    if(token == '['){
+    if(lexer.token == Symbol.LEFTBRACKET){
       expression();
 
-      if(token != ']')
-        error();
+      if(lexer.token != Symbol.RIGHTBRACKET)
+        error.signal("']' expected");
     }
   }
 }
