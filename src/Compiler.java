@@ -94,13 +94,13 @@ public class Compiler {
     Type type;
 
     switch(lexer.token) {
-      case Symbol.INT:
+      case INT:
         type = Type.intType;
         break;
-      case Symbol.DOUBLE:
+      case DOUBLE:
         type = Type.doubleType;
         break;
-      case Symbol.CHAR:
+      case CHAR:
         type = Type.charType;
         break;
       default:
@@ -127,27 +127,28 @@ public class Compiler {
 
   public Statement statement() {
     switch(lexer.token) {
-      case Symbol.IF:
+      case IF:
         lexer.nextToken();
         return ifStatement();
-      case Symbol.WHILE:
+      case WHILE:
         lexer.nextToken();
         return whileStatement();
-      case Symbol.BREAK:
+      case BREAK:
         lexer.nextToken();
         return breakStatement();
-      case Symbol.PRINT:
+      case PRINT:
         lexer.nextToken();
         return printStatement();
-      case Symbol.IDENT:
+      case IDENT:
         return expression();
       default:
         error.signal("Statement expected");
+        return null;
     }
   }
 
   public IfStatement ifStatement() {
-    if(unary(lexer.token))
+    if(isUnary())
       lexer.nextToken();
 
     if(lexer.token != Symbol.LEFTPAR)
@@ -181,7 +182,7 @@ public class Compiler {
         error.signal("'{' expected");
       lexer.nextToken();
 
-      ArrayList<Statement> elseStatements = statementList();
+      elseStatements = statementList();
 
       if(lexer.token != Symbol.RIGHTBRACE)
         error.signal("'}' expected");
@@ -229,7 +230,7 @@ public class Compiler {
   public BreakStatement breakStatement() {
     if(lexer.token != Symbol.BREAK)
       error.signal("'break' expected");
-    nextToken();
+    lexer.nextToken();
     if(lexer.token != Symbol.SEMICOLON)
       error.signal("';' expected");
 
@@ -264,7 +265,7 @@ public class Compiler {
     ExpressionStatement expr = null;
 
     if(isRelationalOperator()){
-      relOp = lexer.token;
+      relOp = lexer.getStringValue();
       lexer.nextToken();
       expr = expression();
     }
@@ -278,14 +279,14 @@ public class Compiler {
     ArrayList<AddOperation> operations = new ArrayList<>();
 
     if(isUnary()){
-      unaryOp = lexer.token;
+      unaryOp = lexer.getStringValue();
       lexer.nextToken();
     }
 
     term = term();
 
     while(isAddOperator()) {
-      operations.add(new AddOperation(lexer.token, term()));
+      operations.add(new AddOperation(lexer.getStringValue(), term()));
       lexer.nextToken();
     }
 
@@ -296,8 +297,8 @@ public class Compiler {
     Factor factor = factor();
     ArrayList<MultOperation> operations = new ArrayList<>();
 
-    while(isMultiplicationOperator(lexer.token)) {
-      operations.add(new MultOperation(lexer.token, factor()));
+    while(isMultiplicationOperator()) {
+      operations.add(new MultOperation(lexer.getStringValue(), factor()));
       lexer.nextToken();
     }
 
@@ -347,7 +348,7 @@ public class Compiler {
     if(lexer.token == Symbol.READINTEGER ||
        lexer.token == Symbol.READDOUBLE  ||
        lexer.token == Symbol.READCHAR) {
-      String currentToken = lexer.token;
+      String currentToken = lexer.getStringValue();
 
       lexer.nextToken();
       if(lexer.token != Symbol.LEFTPAR)
