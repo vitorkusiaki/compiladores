@@ -68,6 +68,8 @@ public class Lexer {
             while(true) {
                 if(input[tokenPos] == '\n')
                   lineNumber++;
+                if(input[tokenPos] == '\0')
+                  error.signal("Unclosed comment!");
                 if(input[tokenPos] == '*') {
                     tokenPos++;
                     if(input[tokenPos] == '/') {
