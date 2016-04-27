@@ -28,7 +28,7 @@ public class CompilerError {
     }
 
     public void signal(String strMessage) {
-        out.println(filename + ": " + lexer.getLineNumber() + " " + strMessage);
+        out.println(filename + ": " + lexer.getLineNumber() + ": " + strMessage);
         out.println(lexer.getCurrentLine());
         if (out.checkError())
             System.out.println("Error in signaling an error");
