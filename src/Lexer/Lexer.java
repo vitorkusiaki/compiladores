@@ -89,7 +89,9 @@ public class Lexer {
             nextToken();
         } else if(Character.isLetter(c)) {
             StringBuffer ident = new StringBuffer();
-            while(Character.isLetter(input[tokenPos]) || input[tokenPos] == '_') {
+            while(Character.isLetter(input[tokenPos]) ||
+                input[tokenPos] == '_' ||
+                Character.isDigit(input[tokenPos])) {
                 ident.append(input[tokenPos]);
                 tokenPos++;
             }

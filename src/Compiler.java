@@ -374,8 +374,6 @@ public class Compiler {
     LValue lvalue = leftValue();
     String currentToken = null;
 
-
-
     // if(lexer.token != Symbol.ASSIGN)
       // error.signal("':=' expected");
 
