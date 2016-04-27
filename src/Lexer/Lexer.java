@@ -65,9 +65,10 @@ public class Lexer {
             nextToken();
         } else if(input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
             // Multi line comment found
+            int commentLines = 0;
             while(true) {
                 if(input[tokenPos] == '\n')
-                  lineNumber++;
+                  commentLines++;
                 if(input[tokenPos] == '\0')
                   error.signal("Unclosed comment!");
                 if(input[tokenPos] == '*') {
@@ -79,7 +80,7 @@ public class Lexer {
                 }
                 tokenPos++;
             }
-            lineNumber++;
+            lineNumber = lineNumber + commentLines + 1;
             nextToken();
         } else if(Character.isLetter(c)) {
             StringBuffer ident = new StringBuffer();
