@@ -69,7 +69,7 @@ public class Lexer {
             while(true) {
                 if(input[tokenPos] == '\n')
                   commentLines++;
-                if(input[tokenPos] == '\0')
+                if(token == Symbol.EOF)
                   error.signal("Unclosed comment!");
                 if(input[tokenPos] == '*') {
                     tokenPos++;
