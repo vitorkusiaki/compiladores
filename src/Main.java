@@ -1,3 +1,8 @@
+/* ------------------------------
+Charles David de Moraes RA: 489662
+Vitor Kusiaki             RA: 408140
+------------------------------ */
+
 import AST.*;
 import java.io.*;
 
@@ -8,7 +13,6 @@ public class Main {
     FileReader stream;
     int numChRead;
     Program program;
-
     if(args.length != 2) {
       System.out.println("Usage:\n   Main input output");
       System.out.println("input is the file to be compiled");
@@ -60,7 +64,7 @@ public class Main {
       program = null;
 
       try {
-        program = compiler.compile(input, printWriter);
+        program = compiler.compile(input, printWriter, args[0]);
       } catch(RuntimeException e) {
         System.out.println(e);
       }

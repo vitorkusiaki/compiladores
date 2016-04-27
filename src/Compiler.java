@@ -1,3 +1,8 @@
+/* ------------------------------
+Charles David de Moraes RA: 489662
+Vitor Kusiaki             RA: 408140
+------------------------------ */
+
 import AST.*;
 import java.util.*;
 import Lexer.*;
@@ -8,9 +13,10 @@ public class Compiler {
   private Lexer lexer;
   private CompilerError error;
 
-  public Program compile(char []input, PrintWriter outError) {
+  public Program compile(char []input, PrintWriter outError, String filename) {
     symbolTable = new Hashtable<String, Variable>();
     error = new CompilerError(outError);
+    error.setFilename(filename);
     lexer = new Lexer(input, error);
     error.setLexer(lexer);
 
@@ -368,8 +374,10 @@ public class Compiler {
     LValue lvalue = leftValue();
     String currentToken = null;
 
-    if(lexer.token != Symbol.ASSIGN)
-      error.signal("':=' expected");
+
+
+    // if(lexer.token != Symbol.ASSIGN)
+      // error.signal("':=' expected");
 
     // 'readInteger' '(' ')' | 'readDouble' '(' ')' | 'readChar' '(' ')'
     if(lexer.token == Symbol.READINTEGER ||
