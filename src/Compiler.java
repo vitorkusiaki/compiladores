@@ -113,13 +113,17 @@ public class Compiler {
       lexer.nextToken();
 
       if(lexer.token != Symbol.NUMBER)
-        error.signal("Number Expected");
+        if(lexer.token == Symbol.MINUS)
+          error.signal("Invalid array length!");
+        else
+          error.signal("Array size expected");
 
       Integer length = lexer.getNumberValue();
       lexer.nextToken();
 
       if(lexer.token != Symbol.RIGHTBRACKET)
         error.signal("']' expected");
+      lexer.nextToken();
 
       type.setLength(length);
     } else {
@@ -363,6 +367,9 @@ public class Compiler {
   public Factor factor() {
     LValue lvalue = leftValue();
     String currentToken = null;
+
+    if(lexer.token != Symbol.ASSIGN)
+      error.signal("':=' expected");
 
     // 'readInteger' '(' ')' | 'readDouble' '(' ')' | 'readChar' '(' ')'
     if(lexer.token == Symbol.READINTEGER ||
