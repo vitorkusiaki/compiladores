@@ -1,8 +1,15 @@
-public class CompositeFactor extends Factor {
-  private final Lvalue rValue;
+/* ------------------------------
+Charles David de Moraes RA: 489662
+Vitor Kusiaki             RA: 408140
+------------------------------ */
 
-  public CompositeFactor(Lvalue lvalue, Lvalue rValue) {
-    this.lvalue = lvalue;
-    this.rvalue = rvalue;
+package AST;
+
+public class CompositeFactor extends Factor {
+  private final LValue rValue;
+
+  public CompositeFactor(LValue lvalue, LValue rValue) {
+    super(lvalue);
+    this.rValue = rValue;
   }
 }

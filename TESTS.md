@@ -1,0 +1,34 @@
+## Tests
+
+- [x] ERRLEX01.txt
+- [x] ERRLEX02.txt
+- [ ] ERRLEX03.txt (?)
+  - RuntimeException
+- [x] ERRLEX04.txt
+- [x] ERRLEX05.txt
+- [x] ERRLEX06.txt
+- [x] ERRLEX07.txt
+- [x] ERRLEX08.txt
+- [x] ERRLEX09.txt
+- [ ] ERRSEM01.txt
+- [ ] ERRSEM02.txt
+- [ ] ERRSEM03.txt
+- [ ] ERRSEM04.txt
+- [ ] ERRSEM05.txt
+- [ ] ERRSEM06.txt
+- [ ] ERRSEM07.txt
+- [ ] ERRSEM08.txt
+- [ ] ERRSEM09.txt
+- [ ] ERRSEM10.txt
+- [ ] ERRSEM11.txt
+- [ ] ERRSEM12.txt
+- [ ] ERRSEM13.txt
+- [ ] ERRSEM14.txt
+- [ ] ERRSEM15.txt
+- [ ] ERRSEM16.txt
+- [ ] ERRSEM17.txt
+- [ ] OKLEX01.txt
+- [ ] OKLEX02.txt
+- [ ] OKLEX03.txt
+- [ ] OKSEM01.txt
+- [ ] OKSEM02.txt

@@ -5,9 +5,5 @@ Vitor Kusiaki             RA: 408140
 
 package AST;
 
-public class IntType extends Type {
-
-    public IntType() {
-        super("int");
-    }
+abstract public class Numberino {
 }

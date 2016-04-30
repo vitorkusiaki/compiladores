@@ -1,9 +1,14 @@
+/* ------------------------------
+Charles David de Moraes RA: 489662
+Vitor Kusiaki             RA: 408140
+------------------------------ */
+
 package AST;
 
 abstract public class Type {
 
     private String name;
-    private IntNumber length;
+    private Integer length;
 
     public static Type intType = new IntType();
     public static Type doubleType = new DoubleType();
@@ -21,7 +26,7 @@ abstract public class Type {
         return name;
     }
 
-    public IntNumber getLength() {
+    public Integer getLength() {
       return length;
     }
 }

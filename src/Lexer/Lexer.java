@@ -1,3 +1,8 @@
+/* ------------------------------
+Charles David de Moraes RA: 489662
+Vitor Kusiaki             RA: 408140
+------------------------------ */
+
 package Lexer;
 
 import java.util.*;
@@ -65,7 +70,12 @@ public class Lexer {
             nextToken();
         } else if(input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
             // Multi line comment found
+            int commentLines = 0;
             while(true) {
+                if(input[tokenPos] == '\n')
+                  commentLines++;
+                if(token == Symbol.EOF)
+                  error.signal("Unclosed comment!");
                 if(input[tokenPos] == '*') {
                     tokenPos++;
                     if(input[tokenPos] == '/') {
@@ -75,10 +85,13 @@ public class Lexer {
                 }
                 tokenPos++;
             }
+            lineNumber = lineNumber + commentLines + 1;
             nextToken();
         } else if(Character.isLetter(c)) {
             StringBuffer ident = new StringBuffer();
-            while(Character.isLetter(input[tokenPos]) || input[tokenPos] == '_') {
+            while(Character.isLetter(input[tokenPos]) ||
+                input[tokenPos] == '_' ||
+                Character.isDigit(input[tokenPos])) {
                 ident.append(input[tokenPos]);
                 tokenPos++;
             }
@@ -96,6 +109,7 @@ public class Lexer {
                 tokenPos++;
             }
             token = Symbol.NUMBER;
+            numberValue = Integer.parseInt(number.toString());
         } else {
             tokenPos++;
             charValue = c;
