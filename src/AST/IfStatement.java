@@ -17,4 +17,26 @@ public class IfStatement extends Statement {
     this.thenStatements = thenStatements;
     this.elseStatements = elseStatements;
   }
+
+  public genC(PW pw) {
+    pw.out.println("if(" + expression.genC(pw) + ") {");
+
+    pw.add();
+    for(Statement t : thenStatements)
+      t.genC(pw);
+
+    pw.sub();
+    pw.out.println("}");
+
+    if(elseStatements.length > 0) {
+      pw.out.println("else {");
+
+      pw.add();
+      for(Statement e : elseStatements)
+        e.genC(pw);
+
+      pw.sub();
+      pw.out.println("}");
+    }
+  }
 }

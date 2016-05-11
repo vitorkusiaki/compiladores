@@ -17,4 +17,8 @@ public class Variable {
   public Type getType() {
     return type;
   }
+
+  public genC(pw) {
+    pw.out.println(type.getName() + " " + identifier + ";");
+  }
 }

@@ -13,4 +13,14 @@ public class LValue {
     this.identifier = ident;
     this.expression = expr;
   }
+
+  public genC(PW pw) {
+    pw.out.print(identifier + " ");
+
+    if(expression != null){
+      pw.out.print("[");
+      expression.genC(pw);
+      pw.out.printn("]");
+    }
+  }
 }

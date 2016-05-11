@@ -13,4 +13,9 @@ public class AddOperation {
     this.addOperator = addOp;
     this.term = term;
   }
+
+  public genC(PW pw) {
+    pw.out.print(addOperator + " ");
+    term.genC(pw);
+  }
 }

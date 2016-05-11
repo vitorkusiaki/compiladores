@@ -8,8 +8,7 @@ package AST;
 public class ReadTypeFactor extends Factor {
   private final String readType;
 
-  public ReadTypeFactor(LValue lvalue, String readType) {
-    super(lvalue);
+  public ReadTypeFactor(String readType) {
     this.readType = readType;
   }
 }

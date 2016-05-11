@@ -12,4 +12,8 @@ public class PrintStatement extends Statement {
   public PrintStatement(ArrayList<ExpressionStatement> expressions) {
     this.expressions = expressions;
   }
+
+  public genC(PW pw) {
+    pw.out.println("printf(")
+  }
 }

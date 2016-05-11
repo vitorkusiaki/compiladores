@@ -371,28 +371,11 @@ public class Compiler {
 
 
   public Factor factor() {
-    LValue lvalue = leftValue();
     String currentToken = null;
 
-    // if(lexer.token != Symbol.ASSIGN)
-      // error.signal("':=' expected");
-
     // 'readInteger' '(' ')' | 'readDouble' '(' ')' | 'readChar' '(' ')'
-    if(lexer.token == Symbol.READINTEGER ||
-       lexer.token == Symbol.READDOUBLE  ||
-       lexer.token == Symbol.READCHAR) {
-
-      switch(lexer.token) {
-        case READINTEGER:
-          currentToken = "readInteger";
-          break;
-        case READDOUBLE:
-          currentToken = "readDouble";
-          break;
-        case READCHAR:
-          currentToken = "readChar";
-          break;
-      }
+    if(lexer.token == Symbol.READINTEGER || lexer.token == Symbol.READDOUBLE || lexer.token == Symbol.READCHAR) {
+      currentToken = getStringValue();
 
       lexer.nextToken();
       if(lexer.token != Symbol.LEFTPAR)
@@ -401,14 +384,13 @@ public class Compiler {
       lexer.nextToken();
       if(lexer.token != Symbol.RIGHTPAR)
         error.signal("')' expected");
-
-      return new ReadTypeFactor(lvalue, currentToken);
+      return new ReadTypeFactor(currentToken);
     }
+
     // Number
-    else if(lexer.token == Symbol.PLUS  ||
-            lexer.token == Symbol.MINUS ||
-            lexer.token == Symbol.NUMBER)
-      return new NumberFactor(lvalue, number());
+    else if(lexer.token == Symbol.PLUS  || lexer.token == Symbol.MINUS || lexer.token == Symbol.NUMBER)
+      return new NumberFactor(number());
+
     // '(' Expr ')'
     else if(lexer.token == Symbol.LEFTPAR){
       lexer.nextToken();
@@ -418,14 +400,24 @@ public class Compiler {
       if(lexer.token == Symbol.RIGHTPAR)
         error.signal("')' expected");
 
-      return new ExpressionFactor(lvalue, expr);
+      return new ExpressionFactor(expr);
     }
-    // Expr
+
+    // LValue ':=' Expr || LValue
     else if(lexer.token == Symbol.IDENT)
-      return new CompositeFactor(lvalue, leftValue());
-    // LValue
+      LValue lvalue = leftValue();
+
+      lexer.nextToken();
+      if(lexer.token == Symbol.ASSIGN) {
+        lexer.nextToken();
+        return new CompositeFactor(lvalue, expression(););
+      }
+
+      // LValue
+      else
+        return new LValueFactor(lvalue);
     else
-      return new ExpressionFactor(lvalue, expression());
+      lexer.error("Invalid character");
   }
 
   public LValue leftValue() {

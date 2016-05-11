@@ -16,4 +16,14 @@ public class SimpleExpression {
     this.term = term;
     this.operations = operations;
   }
+
+  public genC(PW pw) {
+    if(unary != null)
+      pw.out.print(unary + " ");
+
+    term.genC(pw);
+
+    for(AddOperation o : operations)
+      o.genC(pw);
+  }
 }

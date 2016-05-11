@@ -15,4 +15,14 @@ public class ExpressionStatement extends Statement {
     this.relOperator = relOp;
     this.exprStatement = expr;
   }
+
+  public genC(PW pw) {
+    simExpr.genC();
+
+    if(relOp != null)
+      pw.out.print(" " + relOp + " ");
+
+    if(exprStatement != null)
+      exprStatement.genC();
+  }
 }

@@ -8,8 +8,11 @@ package AST;
 public class NumberFactor extends Factor {
   private final Numberino number;
 
-  public NumberFactor(LValue lvalue, Numberino number) {
-    super(lvalue);
+  public NumberFactor(Numberino number) {
     this.number = number;
+  }
+
+  public genC(PW pw) {
+    number.genC(pw);
   }
 }

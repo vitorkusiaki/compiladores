@@ -6,10 +6,17 @@ Vitor Kusiaki             RA: 408140
 package AST;
 
 public class CompositeFactor extends Factor {
-  private final LValue rValue;
+  private final LValue lvalue;
+  private final ExpressionStatement expression;
 
-  public CompositeFactor(LValue lvalue, LValue rValue) {
-    super(lvalue);
-    this.rValue = rValue;
+  public CompositeFactor(LValue lvalue, ExpressionStatement expr) {
+    this.lvalue = lvalue;
+    this.expression = expr;
+  }
+
+  public genC(PW pw) {
+    lvalue.genC(pw);
+    pw.out.print (" := ");
+    expression.genC(pw);
   }
 }

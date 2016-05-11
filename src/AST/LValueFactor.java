@@ -5,14 +5,14 @@ Vitor Kusiaki             RA: 408140
 
 package AST;
 
-public class BreakStatement extends Statement{
-  private final String expression;
+public class LValueFactor extends Factor {
+  private final LValue lvalue;
 
-  public BreakStatement() {
-    this.expression = "break;";
+  public LValueFactor(LValue lvalue) {
+    this.lvalue = lvalue;
   }
 
   public genC(PW pw) {
-    pw.out.prinln(expression);
+    lvalue.genC(pw);
   }
 }

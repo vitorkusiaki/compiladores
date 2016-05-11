@@ -14,4 +14,11 @@ public class Term {
     this.factor = factor;
     this.operations = operations;
   }
+
+  public genC(PW pw) {
+    factor.genC(pw);
+
+    for(MultOperation o : operations)
+      o.genC(pw);
+  }
 }

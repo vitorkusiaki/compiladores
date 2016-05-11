@@ -8,8 +8,11 @@ package AST;
 public class ExpressionFactor extends Factor {
   private final ExpressionStatement expression;
 
-  public ExpressionFactor(LValue lvalue, ExpressionStatement expr) {
-    super(lvalue);
+  public ExpressionFactor(ExpressionStatement expr) {
     this.expression = expr;
+  }
+
+  public genC(PW pw) {
+    expr.genC(pw);
   }
 }
