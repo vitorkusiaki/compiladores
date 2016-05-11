@@ -372,10 +372,11 @@ public class Compiler {
 
   public Factor factor() {
     String currentToken = null;
+    LValue lvalue = null;
 
     // 'readInteger' '(' ')' | 'readDouble' '(' ')' | 'readChar' '(' ')'
     if(lexer.token == Symbol.READINTEGER || lexer.token == Symbol.READDOUBLE || lexer.token == Symbol.READCHAR) {
-      currentToken = getStringValue();
+      currentToken = lexer.getStringValue();
 
       lexer.nextToken();
       if(lexer.token != Symbol.LEFTPAR)
@@ -404,20 +405,24 @@ public class Compiler {
     }
 
     // LValue ':=' Expr || LValue
-    else if(lexer.token == Symbol.IDENT)
-      LValue lvalue = leftValue();
+    else if(lexer.token == Symbol.IDENT){
+
+      lvalue = leftValue();
 
       lexer.nextToken();
       if(lexer.token == Symbol.ASSIGN) {
         lexer.nextToken();
-        return new CompositeFactor(lvalue, expression(););
+        return new CompositeFactor(lvalue, expression());
       }
 
       // LValue
       else
         return new LValueFactor(lvalue);
+    }
     else
-      lexer.error("Invalid character");
+      error.signal("Invalid character");
+
+    return null;
   }
 
   public LValue leftValue() {

@@ -11,4 +11,8 @@ public class DoubleNumber extends Numberino {
   public DoubleNumber(double number) {
     this.number = number;
   }
+
+  public void genC(PW pw) {
+    pw.out.print(Double.toString(number) + " ");
+  }
 }

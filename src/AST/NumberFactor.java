@@ -12,7 +12,7 @@ public class NumberFactor extends Factor {
     this.number = number;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     number.genC(pw);
   }
 }

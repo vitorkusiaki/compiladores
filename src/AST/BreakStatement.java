@@ -12,7 +12,7 @@ public class BreakStatement extends Statement{
     this.expression = "break;";
   }
 
-  public genC(PW pw) {
-    pw.out.prinln(expression);
+  public void genC(PW pw) {
+    pw.out.println(expression);
   }
 }

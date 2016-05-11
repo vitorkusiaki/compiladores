@@ -16,8 +16,10 @@ public class WhileStatement extends Statement {
     this. statements = statements;
   }
 
-  public genC(PW pw) {
-    pw.out.println("while(" + expression.genC(pw) + ") {");
+  public void genC(PW pw) {
+    pw.out.print("while(");
+    expression.genC(pw);
+    pw.out.println(") {");
 
     pw.add();
     for(Statement s : statements)

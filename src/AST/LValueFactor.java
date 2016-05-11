@@ -12,7 +12,7 @@ public class LValueFactor extends Factor {
     this.lvalue = lvalue;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     lvalue.genC(pw);
   }
 }

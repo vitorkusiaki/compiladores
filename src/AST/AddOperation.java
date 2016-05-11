@@ -14,7 +14,7 @@ public class AddOperation {
     this.term = term;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     pw.out.print(addOperator + " ");
     term.genC(pw);
   }

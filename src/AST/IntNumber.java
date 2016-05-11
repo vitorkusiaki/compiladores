@@ -11,4 +11,8 @@ public class IntNumber extends Numberino {
   public IntNumber(int number) {
     this.number = number;
   }
+
+  public void genC(PW pw ) {
+    pw.out.print(Integer.toString(number) + " ");
+  }
 }

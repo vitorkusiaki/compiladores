@@ -17,7 +17,7 @@ public class SimpleExpression {
     this.operations = operations;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     if(unary != null)
       pw.out.print(unary + " ");
 

@@ -11,4 +11,7 @@ public class ReadTypeFactor extends Factor {
   public ReadTypeFactor(String readType) {
     this.readType = readType;
   }
+  
+  public void genC(PW pw){
+  }
 }

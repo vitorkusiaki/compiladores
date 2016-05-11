@@ -13,7 +13,7 @@ public class PrintStatement extends Statement {
     this.expressions = expressions;
   }
 
-  public genC(PW pw) {
-    pw.out.println("printf(")
+  public void genC(PW pw) {
+    pw.out.println("printf(");
   }
 }

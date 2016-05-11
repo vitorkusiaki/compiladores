@@ -6,4 +6,5 @@ Vitor Kusiaki             RA: 408140
 package AST;
 
 abstract public class Statement {
+  abstract void genC(PW pw);
 }

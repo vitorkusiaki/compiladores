@@ -15,7 +15,7 @@ public class Term {
     this.operations = operations;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     factor.genC(pw);
 
     for(MultOperation o : operations)

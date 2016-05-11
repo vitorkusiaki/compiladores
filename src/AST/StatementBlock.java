@@ -13,10 +13,10 @@ public class StatementBlock {
 
   public StatementBlock(ArrayList<Variable> vars, ArrayList<Statement> statements) {
     this.vars = vars;
-    this.statement = statements;
+    this.statements = statements;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     for(Variable v : vars)
       v.genC(pw);
 

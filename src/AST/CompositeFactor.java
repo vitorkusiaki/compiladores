@@ -14,7 +14,7 @@ public class CompositeFactor extends Factor {
     this.expression = expr;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     lvalue.genC(pw);
     pw.out.print (" := ");
     expression.genC(pw);

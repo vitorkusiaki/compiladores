@@ -12,7 +12,7 @@ public class Program {
     this.stmtBlock = stmtBlock;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     pw.out.println("#include <stdio.h>");
     pw.out.println("#include <stdlib.h>");
     pw.out.println();

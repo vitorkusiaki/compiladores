@@ -16,13 +16,13 @@ public class ExpressionStatement extends Statement {
     this.exprStatement = expr;
   }
 
-  public genC(PW pw) {
-    simExpr.genC();
+  public void genC(PW pw) {
+    simExpression.genC(pw);
 
-    if(relOp != null)
-      pw.out.print(" " + relOp + " ");
+    if(relOperator != null)
+      pw.out.print(" " + relOperator + " ");
 
     if(exprStatement != null)
-      exprStatement.genC();
+      exprStatement.genC(pw);
   }
 }

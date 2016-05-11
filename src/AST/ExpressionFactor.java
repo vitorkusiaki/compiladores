@@ -12,7 +12,7 @@ public class ExpressionFactor extends Factor {
     this.expression = expr;
   }
 
-  public genC(PW pw) {
-    expr.genC(pw);
+  public void genC(PW pw) {
+    expression.genC(pw);
   }
 }

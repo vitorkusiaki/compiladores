@@ -14,13 +14,13 @@ public class LValue {
     this.expression = expr;
   }
 
-  public genC(PW pw) {
+  public void genC(PW pw) {
     pw.out.print(identifier + " ");
 
     if(expression != null){
       pw.out.print("[");
       expression.genC(pw);
-      pw.out.printn("]");
+      pw.out.println("]");
     }
   }
 }
