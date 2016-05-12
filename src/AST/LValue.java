@@ -15,12 +15,12 @@ public class LValue {
   }
 
   public void genC(PW pw) {
-    pw.out.print(identifier + " ");
+    pw.print(identifier);
 
     if(expression != null){
-      pw.out.print("[");
+      pw.print("[");
       expression.genC(pw);
-      pw.out.println("]");
+      pw.println("]");
     }
   }
 }

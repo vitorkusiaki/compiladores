@@ -17,15 +17,15 @@ public class WhileStatement extends Statement {
   }
 
   public void genC(PW pw) {
-    pw.out.print("while(");
+    pw.print("while(");
     expression.genC(pw);
-    pw.out.println(") {");
+    pw.println(") {");
 
     pw.add();
     for(Statement s : statements)
       s.genC(pw);
 
     pw.sub();
-    pw.out.println("}");
+    pw.println("}");
   }
 }

@@ -19,7 +19,7 @@ public class SimpleExpression {
 
   public void genC(PW pw) {
     if(unary != null)
-      pw.out.print(unary + " ");
+      pw.print(unary + "");
 
     term.genC(pw);
 

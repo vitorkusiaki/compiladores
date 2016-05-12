@@ -19,10 +19,9 @@ public class ExpressionStatement extends Statement {
   public void genC(PW pw) {
     simExpression.genC(pw);
 
-    if(relOperator != null)
-      pw.out.print(" " + relOperator + " ");
-
-    if(exprStatement != null)
+    if(relOperator != null){
+      pw.print(relOperator);
       exprStatement.genC(pw);
+    }
   }
 }

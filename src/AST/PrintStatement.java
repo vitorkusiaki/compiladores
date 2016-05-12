@@ -14,6 +14,6 @@ public class PrintStatement extends Statement {
   }
 
   public void genC(PW pw) {
-    pw.out.println("printf(");
+    pw.println("printf(");
   }
 }

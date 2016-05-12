@@ -19,26 +19,26 @@ public class IfStatement extends Statement {
   }
 
   public void genC(PW pw) {
-    pw.out.print("if(");
+    pw.print("if(");
     expression.genC(pw);
-    pw.out.println(") {");
+    pw.println(") {");
 
     pw.add();
     for(Statement t : thenStatements)
       t.genC(pw);
 
     pw.sub();
-    pw.out.println("}");
+    pw.println("}");
 
     if(elseStatements.size() > 0) {
-      pw.out.println("else {");
+      pw.println("else {");
 
       pw.add();
       for(Statement e : elseStatements)
         e.genC(pw);
 
       pw.sub();
-      pw.out.println("}");
+      pw.println("}");
     }
   }
 }

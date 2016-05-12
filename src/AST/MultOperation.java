@@ -15,7 +15,7 @@ public class MultOperation {
   }
 
   public void genC(PW pw) {
-    pw.out.print(multOperator + " ");
+    pw.print(multOperator);
     factor.genC(pw);
   }
 }

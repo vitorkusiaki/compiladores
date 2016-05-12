@@ -13,6 +13,6 @@ public class DoubleNumber extends Numberino {
   }
 
   public void genC(PW pw) {
-    pw.out.print(Double.toString(number) + " ");
+    pw.print(Double.toString(number));
   }
 }

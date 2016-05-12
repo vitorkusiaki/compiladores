@@ -180,6 +180,7 @@ public class Lexer {
                         stringValue = ":=";
                     } else
                         error.signal("'=' expected");
+                    break;
                 case ';':
                     token = Symbol.SEMICOLON;
                     break;

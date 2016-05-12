@@ -13,6 +13,6 @@ public class IntNumber extends Numberino {
   }
 
   public void genC(PW pw ) {
-    pw.out.print(Integer.toString(number) + " ");
+    pw.print(Integer.toString(number));
   }
 }

@@ -57,6 +57,7 @@ public class Compiler {
     vars = variableDeclaration();
     statements = statementList();
 
+    lexer.nextToken();
     if(lexer.token != Symbol.RIGHTBRACE)
       error.signal("'}' expected");
     lexer.nextToken();
@@ -406,10 +407,8 @@ public class Compiler {
 
     // LValue ':=' Expr || LValue
     else if(lexer.token == Symbol.IDENT){
-
       lvalue = leftValue();
 
-      lexer.nextToken();
       if(lexer.token == Symbol.ASSIGN) {
         lexer.nextToken();
         return new CompositeFactor(lvalue, expression());

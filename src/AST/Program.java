@@ -13,15 +13,15 @@ public class Program {
   }
 
   public void genC(PW pw) {
-    pw.out.println("#include <stdio.h>");
-    pw.out.println("#include <stdlib.h>");
-    pw.out.println();
-    pw.out.println("void main() {");
+    pw.println("#include <stdio.h>");
+    pw.println("#include <stdlib.h>");
+    pw.println("");
+    pw.println("void main() {");
 
     pw.add();
     stmtBlock.genC(pw);
 
     pw.sub();
-    pw.out.println("}");
+    pw.println("}");
   }
 }
