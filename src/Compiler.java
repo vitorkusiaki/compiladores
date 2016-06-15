@@ -31,7 +31,7 @@ public class Compiler {
           lexer.token == Symbol.INT ||
           lexer.token == Symbol.DOUBLE ||
           lexer.token == Symbol.CHAR)
-      declarations.add(functionDeclaration);
+      declarations.add(functionDeclaration());
 
   }
 
@@ -67,7 +67,7 @@ public class Compiler {
     lexer.nextToken();
     stmtBlock = stmtBlock();
 
-    return new FunctionDeclaration(type, ident, formal, stmtBlock);
+    return new FunctionDeclaration(type, ident, formals, stmtBlock);
   }
 
   public ArrayList<Variable> formal() {

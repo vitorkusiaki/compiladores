@@ -30,5 +30,7 @@ abstract public class Type {
     return length;
   }
 
-
+  public void genC(PW pw) {
+    pw.print(name);
+  }
 }

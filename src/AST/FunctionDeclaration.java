@@ -4,25 +4,26 @@ Vitor Kusiaki             RA: 408140
 ------------------------------ */
 
 package AST;
+import java.util.ArrayList;
 
 public class FunctionDeclaration {
   private final Type type;
   private final String ident;
-  private final Formal formal;
+  private final ArrayList<Variable> formals;
   private final StatementBlock stmtBlock;
 
-  public FunctionDeclaration(Type type, String ident, Formal formal, StatementBlock stmtBlock){
+  public FunctionDeclaration(Type type, String ident, ArrayList<Variable> formals, StatementBlock stmtBlock){
     this.type = type;
     this.ident = ident;
-    this.formal = formal;
+    this.formals = formals;
     this.stmtBlock = stmtBlock;
   }
 
   public void genC(PW pw) {
     type.genC(pw);
-    pw.print("(")
+    pw.print(" (");
     pw.print(ident);
-    pw.print(")")
+    pw.print(")");
     stmtBlock.genC(pw);
   }
 }
