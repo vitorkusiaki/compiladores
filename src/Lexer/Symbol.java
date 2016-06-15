@@ -37,6 +37,7 @@ public enum Symbol {
   MAIN("main"),
   INT("int"),
   DOUBLE("double"),
+  QUOTE("\""),
   CHAR("char"),
   IF("if"),
   ELSE("else"),
