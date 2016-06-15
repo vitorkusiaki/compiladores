@@ -24,25 +24,51 @@ public class Compiler {
     return declaration();
   }
 
-  public Program declaration() {
-    // Decl ::= 'void' 'main' '(' ')' StmtBlock
-    if(lexer.token != Symbol.VOID)
-      error.signal("'void' expected");
-    lexer.nextToken();
+  public Program declaration(){
+    ArrayList<FunctionDeclaration> declarations = new ArrayList<>();
 
-    if(lexer.token != Symbol.MAIN)
-      error.signal("'main' expected");
-    lexer.nextToken();
+    while(lexer.token == Symbol.VOID ||
+          lexer.token == Symbol.INT ||
+          lexer.token == Symbol.DOUBLE ||
+          lexer.token == Symbol.CHAR)
+      declarations.add(functionDeclaration);
 
+  }
+
+  public FunctionDeclaration functionDeclaration() {
+    // FunctionDecl ::= Type Ident ‘(’ Formals ‘)’ StmtBlock
+    //                  | ‘void’ Ident ‘(’ Formals ‘)’ StmtBlock
+    Type type = null;
+    String ident;
+    Formal formal = null;
+    StatementBlock stmtBlock = null;
+
+    if(lexer.token == Symbol.VOID){
+      type = new Type(Symbol.VOID);
+      lexer.nextToken();
+    }
+    else
+      type = type();
+
+
+    if(lexer.token != Symbol.IDENT)
+      error.signal("Identifier expected");
+
+    ident = lexer.getStringValue();
+    lexer.nextToken();
     if(lexer.token != Symbol.LEFTPAR)
       error.signal("'(' expected");
+
     lexer.nextToken();
+    formal = formals();
 
     if(lexer.token != Symbol.RIGHTPAR)
       error.signal("')' expected");
-    lexer.nextToken();
 
-    return new Program(stmtBlock());
+    lexer.nextToken();
+    stmtBlock = stmtBlock();
+
+    return new FunctionDeclaration(type, ident, formal, stmtBlock);
   }
 
   public StatementBlock stmtBlock() {

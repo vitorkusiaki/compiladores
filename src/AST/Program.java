@@ -4,24 +4,17 @@ Vitor Kusiaki             RA: 408140
 ------------------------------ */
 
 package AST;
+import java.util.ArrayList;
 
 public class Program {
-  private final StatementBlock stmtBlock;
+  final private ArrayList<FunctionDeclaration> declarations;
 
-  public Program(StatementBlock stmtBlock){
-    this.stmtBlock = stmtBlock;
+  public Program(ArrayList<FunctionDeclaration> declarations){
+    this.declarations = declarations;
   }
 
   public void genC(PW pw) {
-    pw.println("#include <stdio.h>");
-    pw.println("#include <stdlib.h>");
-    pw.println("");
-    pw.println("void main() {");
-
-    pw.add();
-    stmtBlock.genC(pw);
-
-    pw.sub();
-    pw.println("}");
+    for(FunctionDeclaration d : declarations)
+      d.genC(pw);
   }
 }
