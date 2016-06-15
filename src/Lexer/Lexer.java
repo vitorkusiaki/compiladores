@@ -48,6 +48,7 @@ public class Lexer {
         keywordsTable.put("while", Symbol.WHILE);
         keywordsTable.put("break", Symbol.BREAK);
         keywordsTable.put("print", Symbol.PRINT);
+        keywordsTable.put("return", Symbol.RETURN);
         keywordsTable.put("readInteger", Symbol.READINTEGER);
         keywordsTable.put("readDouble", Symbol.READDOUBLE);
         keywordsTable.put("readChar", Symbol.READCHAR);
@@ -210,6 +211,16 @@ public class Lexer {
                         stringValue = "||";
                     } else
                         error.signal("| expected");
+                    break;
+                case '"':
+                    token = Symbol.QUOTE;
+                    StringBuffer stringConst = new StringBuffer();
+
+                    while(input[tokenPos] != '"') {
+                        stringConst.append(input[tokenPos]);
+                        tokenPos++;
+                    }
+                    stringValue = stringConst.toString();
                     break;
                 default:
                     error.signal("Invalid character: '" + c + "'");
