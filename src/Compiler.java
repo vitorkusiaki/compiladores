@@ -40,7 +40,7 @@ public class Compiler {
     //                  | ‘void’ Ident ‘(’ Formals ‘)’ StmtBlock
     Type type = null;
     String ident;
-    Formal formal = null;
+    ArrayList<Variable> formals = null;
     StatementBlock stmtBlock = null;
 
     if(lexer.token == Symbol.VOID){
@@ -49,7 +49,6 @@ public class Compiler {
     }
     else
       type = type();
-
 
     if(lexer.token != Symbol.IDENT)
       error.signal("Identifier expected");
@@ -60,7 +59,7 @@ public class Compiler {
       error.signal("'(' expected");
 
     lexer.nextToken();
-    formal = formals();
+    formals = formal();
 
     if(lexer.token != Symbol.RIGHTPAR)
       error.signal("')' expected");
@@ -69,6 +68,31 @@ public class Compiler {
     stmtBlock = stmtBlock();
 
     return new FunctionDeclaration(type, ident, formal, stmtBlock);
+  }
+
+  public ArrayList<Variable> formal() {
+    ArrayList<Variable> formals = new ArrayList<Variable>();
+
+    while(lexer.token == Symbol.INT ||
+        lexer.token == Symbol.DOUBLE ||
+        lexer.token == Symbol.CHAR) {
+      Type type = type();
+
+      if(lexer.token != Symbol.IDENT)
+        error.signal("Identifier expected");
+
+      String identifier = lexer.getStringValue();
+
+      Variable formal = new Variable(type, identifier);
+      // To put or not to put formal in Symbol Table?
+      // symbolTable.put(identifier, formal);
+      formals.add(formal);
+
+      lexer.nextToken();
+      if(lexer.token == Symbol.COMMA)
+        lexer.nextToken();
+    }
+    return formals;
   }
 
   public StatementBlock stmtBlock() {
