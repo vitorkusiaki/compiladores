@@ -13,6 +13,7 @@ abstract public class Type {
   public static Type intType = new IntType();
   public static Type doubleType = new DoubleType();
   public static Type charType = new CharType();
+  public static Type voidType = new VoidType();
 
   public Type(String name) {
     this.name = name;

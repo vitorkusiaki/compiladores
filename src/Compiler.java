@@ -33,6 +33,7 @@ public class Compiler {
           lexer.token == Symbol.CHAR)
       declarations.add(functionDeclaration());
 
+    return new Program(declarations);
   }
 
   public FunctionDeclaration functionDeclaration() {
@@ -43,12 +44,7 @@ public class Compiler {
     ArrayList<Variable> formals = null;
     StatementBlock stmtBlock = null;
 
-    if(lexer.token == Symbol.VOID){
-      type = new Type(Symbol.VOID);
-      lexer.nextToken();
-    }
-    else
-      type = type();
+    type = type();
 
     if(lexer.token != Symbol.IDENT)
       error.signal("Identifier expected");
@@ -159,6 +155,9 @@ public class Compiler {
         break;
       case CHAR:
         type = Type.charType;
+        break;
+      case VOID:
+        type = Type.voidType;
         break;
       default:
         error.signal("Type expected");
