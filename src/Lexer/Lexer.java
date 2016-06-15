@@ -48,6 +48,7 @@ public class Lexer {
         keywordsTable.put("while", Symbol.WHILE);
         keywordsTable.put("break", Symbol.BREAK);
         keywordsTable.put("print", Symbol.PRINT);
+        keywordsTable.put("return", Symbol.RETURN);
         keywordsTable.put("readInteger", Symbol.READINTEGER);
         keywordsTable.put("readDouble", Symbol.READDOUBLE);
         keywordsTable.put("readChar", Symbol.READCHAR);
