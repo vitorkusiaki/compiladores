@@ -31,8 +31,9 @@ public class Compiler {
           lexer.token == Symbol.INT ||
           lexer.token == Symbol.DOUBLE ||
           lexer.token == Symbol.CHAR)
-      declarations.add(functionDeclaration);
+      declarations.add(functionDeclaration());
 
+    return new Program(declarations);
   }
 
   public FunctionDeclaration functionDeclaration() {
@@ -43,12 +44,7 @@ public class Compiler {
     ArrayList<Variable> formals = null;
     StatementBlock stmtBlock = null;
 
-    if(lexer.token == Symbol.VOID){
-      type = new Type(Symbol.VOID);
-      lexer.nextToken();
-    }
-    else
-      type = type();
+    type = type();
 
     if(lexer.token != Symbol.IDENT)
       error.signal("Identifier expected");
@@ -67,7 +63,7 @@ public class Compiler {
     lexer.nextToken();
     stmtBlock = stmtBlock();
 
-    return new FunctionDeclaration(type, ident, formal, stmtBlock);
+    return new FunctionDeclaration(type, ident, formals, stmtBlock);
   }
 
   public ArrayList<Variable> formal() {
@@ -160,6 +156,9 @@ public class Compiler {
       case CHAR:
         type = Type.charType;
         break;
+      case VOID:
+        type = Type.voidType;
+        break;
       default:
         error.signal("Type expected");
         type = null;
@@ -218,6 +217,9 @@ public class Compiler {
       case PRINT:
         lexer.nextToken();
         return printStatement();
+      case RETURN:
+        lexer.nextToken();
+        return returnStatement();
       case IDENT:
         return expression();
       default:
@@ -336,6 +338,20 @@ public class Compiler {
         error.signal("')' expected");
 
     return new PrintStatement(expressions);
+  }
+
+  public ReturnStatement returnStatement() {
+    ExpressionStatement expression = null;
+
+    lexer.nextToken();
+
+    expression = expression();
+    lexer.nextToken();
+
+    if(lexer.token != Symbol.SEMICOLON)
+      error.signal("';' expected");
+
+    return new ReturnStatement(expression);
   }
 
   public ExpressionStatement expression() {
