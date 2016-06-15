@@ -218,6 +218,9 @@ public class Compiler {
       case PRINT:
         lexer.nextToken();
         return printStatement();
+      case RETURN:
+        lexer.nextToken();
+        return returnStatement();
       case IDENT:
         return expression();
       default:
@@ -336,6 +339,20 @@ public class Compiler {
         error.signal("')' expected");
 
     return new PrintStatement(expressions);
+  }
+
+  public ReturnStatement returnStatement() {
+    ExpressionStatement expression = null;
+
+    lexer.nextToken();
+
+    expression = expression();
+    lexer.nextToken();
+
+    if(lexer.token != Symbol.SEMICOLON)
+      error.signal("';' expected");
+
+    return new ReturnStatement(expression);
   }
 
   public ExpressionStatement expression() {

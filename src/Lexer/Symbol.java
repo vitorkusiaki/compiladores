@@ -43,6 +43,7 @@ public enum Symbol {
   WHILE("while"),
   BREAK("break"),
   PRINT("print"),
+  RETURN("return"),
   READINTEGER("readInteger"),
   READDOUBLE("readDouble"),
   READCHAR("readChar");
