@@ -102,9 +102,11 @@ public class Lexer {
             if(value == null)
                 token = Symbol.IDENT;
             else {
-                if(!(stringValue.equals(value.toString())))
-                    error.signal("Keyword must be lowercase!");
                 token = value;
+                if(!(stringValue.equals(token.toString()))) {
+                    lastTokenPos = lastTokenPos + 2;
+                    error.signal("Keyword must be lowercase!");
+                }
             }
         } else if(Character.isDigit(c)) {
             StringBuffer number = new StringBuffer();
@@ -268,9 +270,5 @@ public class Lexer {
             i++;
         }
         return line.toString();
-    }
-    
-    private String capitalize(final String line) {
-      return Character.toUpperCase(line.charAt(0)) + line.substring(1);
     }
 }
