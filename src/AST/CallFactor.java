@@ -10,8 +10,8 @@ public class CallFactor extends Factor {
   final private String ident;
   final private ArrayList<ExpressionStatement> actuals;
 
-  public Call(String ident, ArrayList<ExpressionStatement> actuals) {
-    this.identifier = ident;
+  public CallFactor(String ident, ArrayList<ExpressionStatement> actuals) {
+    this.ident = ident;
     this.actuals = actuals;
   }
 
@@ -21,7 +21,7 @@ public class CallFactor extends Factor {
     if(actuals != null){
       pw.print("(");
       for(ExpressionStatement a : actuals) {
-        a.genc(pw)
+        a.genC(pw);
         pw.print(",");
       }
       pw.println(")");

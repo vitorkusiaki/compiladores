@@ -478,11 +478,11 @@ public class Compiler {
         return call(identifier);
       else if(lexer.token == Symbol.ASSIGN) {
         lexer.nextToken();
-        return new CompositeFactor(lvalue(identifier), expression());
+        return new CompositeFactor(leftValue(identifier), expression());
       }
       // LValue
       else
-        return new LValueFactor(lvalue(identifier));
+        return new LValueFactor(leftValue(identifier));
     }
     else
       error.signal("Invalid character");
@@ -501,7 +501,7 @@ public class Compiler {
         error.signal("']' expected");
     }
 
-    return new LValue(ident expression);
+    return new LValue(ident, expression);
   }
 
   public CallFactor call(String ident) {
@@ -511,6 +511,17 @@ public class Compiler {
       error.signal("'(' expected");
 
     return new CallFactor(ident, actuals);
+  }
+
+  public ArrayList<ExpressionStatement> actuals() {
+    ArrayList<ExpressionStatement> actuals = new ArrayList<>();
+
+    actuals.add(expression());
+
+    while(lexer.token == Symbol.COMMA) {
+      actuals.add(expression());
+    }
+    return actuals;
   }
 
   public Numberino number() {
