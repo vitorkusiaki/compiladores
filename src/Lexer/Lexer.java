@@ -98,7 +98,7 @@ public class Lexer {
             }
             stringValue = ident.toString();
 
-            Symbol value = keywordsTable.get(stringValue);
+            Symbol value = keywordsTable.get(stringValue.toLowerCase());
             if(value == null)
                 token = Symbol.IDENT;
             else {
