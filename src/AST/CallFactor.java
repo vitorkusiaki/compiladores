@@ -4,12 +4,13 @@ Vitor Kusiaki             RA: 408140
 ------------------------------ */
 
 package AST;
+import java.util.ArrayList;
 
 public class CallFactor extends Factor {
   final private String ident;
-  final private Actuals actuals;
+  final private ArrayList<Expression> actuals;
 
-  public Call(String ident, Actuals actuals) {
+  public Call(String ident, ArrayList<Expression> actuals) {
     this.identifier = ident;
     this.actuals = actuals;
   }
@@ -19,7 +20,10 @@ public class CallFactor extends Factor {
 
     if(actuals != null){
       pw.print("(");
-      actuals.genC(pw);
+      for(Expression a : actuals) {
+        a.genc(pw)
+        pw.print(",");
+      }
       pw.println(")");
     }
   }

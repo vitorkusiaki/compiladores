@@ -505,7 +505,7 @@ public class Compiler {
   }
 
   public CallFactor call(String ident) {
-    Actuals actuals = actuals();
+    ArrayList<Expression> actuals = actuals();
 
     if(lexer.token != Symbol.RIGHTPAR)
       error.signal("'(' expected");
