@@ -46,7 +46,7 @@ public class Compiler {
 
     type = type();
 
-    if(lexer.token != Symbol.IDENT)
+    if(lexer.token != Symbol.IDENT && lexer.token != Symbol.MAIN)
       error.signal("Identifier expected");
 
     ident = lexer.getStringValue();
@@ -103,7 +103,6 @@ public class Compiler {
     vars = variableDeclaration();
     statements = statementList();
 
-    lexer.nextToken();
     if(lexer.token != Symbol.RIGHTBRACE)
       error.signal("'}' expected");
     lexer.nextToken();

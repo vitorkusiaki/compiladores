@@ -102,10 +102,8 @@ public class Lexer {
             if(value == null)
                 token = Symbol.IDENT;
             else {
-                String capitalized = capitalize(stringValue);
-                if(stringValue.equals(capitalized))
+                if(!(stringValue.equals(value.toString())))
                     error.signal("Keyword must be lowercase!");
-
                 token = value;
             }
         } else if(Character.isDigit(c)) {
