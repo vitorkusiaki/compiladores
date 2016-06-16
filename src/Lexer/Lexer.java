@@ -101,8 +101,13 @@ public class Lexer {
             Symbol value = keywordsTable.get(stringValue);
             if(value == null)
                 token = Symbol.IDENT;
-            else
+            else {
+                String capitalized = capitalize(stringValue);
+                if(stringValue.equals(capitalized))
+                    error.signal("Keyword must be lowercase!");
+
                 token = value;
+            }
         } else if(Character.isDigit(c)) {
             StringBuffer number = new StringBuffer();
             while(Character.isDigit(input[tokenPos])) {
@@ -265,5 +270,9 @@ public class Lexer {
             i++;
         }
         return line.toString();
+    }
+    
+    private String capitalize(final String line) {
+      return Character.toUpperCase(line.charAt(0)) + line.substring(1);
     }
 }
