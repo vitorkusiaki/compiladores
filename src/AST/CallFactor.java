@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class CallFactor extends Factor {
   final private String ident;
-  final private ArrayList<Expression> actuals;
+  final private ArrayList<ExpressionStatement> actuals;
 
-  public Call(String ident, ArrayList<Expression> actuals) {
+  public Call(String ident, ArrayList<ExpressionStatement> actuals) {
     this.identifier = ident;
     this.actuals = actuals;
   }
@@ -20,7 +20,7 @@ public class CallFactor extends Factor {
 
     if(actuals != null){
       pw.print("(");
-      for(Expression a : actuals) {
+      for(ExpressionStatement a : actuals) {
         a.genc(pw)
         pw.print(",");
       }
