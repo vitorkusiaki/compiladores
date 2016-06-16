@@ -483,6 +483,15 @@ public class Compiler {
       else
         return new LValueFactor(leftValue(identifier));
     }
+
+    // CharConstant || StringConstant
+    else if(lexer.token == Symbol.QUOTE) {
+      String constant = lexer.getStringValue();
+      if(constant.length() > 1)
+        return new StringConstantFactor(constant);
+      else
+        return new CharConstantFactor(constant.charAt(0));
+    }
     else
       error.signal("Invalid character");
 

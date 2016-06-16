@@ -13,6 +13,6 @@ public class StringConstantFactor extends Factor {
   }
 
   public void genC(PW pw) {
-    pw.print(value);
+    pw.print("\"" + value + "\"");
   }
 }

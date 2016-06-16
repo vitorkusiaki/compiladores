@@ -6,13 +6,13 @@ Vitor Kusiaki             RA: 408140
 package AST;
 
 public class CharConstantFactor extends Factor {
-  private final char value;
+  private final Character value;
 
   public CharConstantFactor(char value) {
     this.value = value;
   }
 
   public void genC(PW pw) {
-    pw.print(value);
+    pw.print("\"" + value + "\"");
   }
 }
