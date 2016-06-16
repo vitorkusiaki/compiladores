@@ -439,7 +439,6 @@ public class Compiler {
 
   public Factor factor() {
     String currentToken = null;
-    LValue lvalue = null;
 
     // 'readInteger' '(' ')' | 'readDouble' '(' ')' | 'readChar' '(' ')'
     if(lexer.token == Symbol.READINTEGER || lexer.token == Symbol.READDOUBLE || lexer.token == Symbol.READCHAR) {
@@ -471,18 +470,19 @@ public class Compiler {
       return new ExpressionFactor(expr);
     }
 
-    // LValue ':=' Expr || LValue
+    // LValue ':=' Expr || LValue || Call
     else if(lexer.token == Symbol.IDENT){
-      lvalue = leftValue();
-
-      if(lexer.token == Symbol.ASSIGN) {
+      String identifier = lexer.getStringValue();
+      lexer.nextToken();
+      if(lexer.token == Symbol.LEFTPAR)
+        return call(identifier);
+      else if(lexer.token == Symbol.ASSIGN) {
         lexer.nextToken();
-        return new CompositeFactor(lvalue, expression());
+        return new CompositeFactor(lvalue(identifier), expression());
       }
-
       // LValue
       else
-        return new LValueFactor(lvalue);
+        return new LValueFactor(lvalue(identifier));
     }
     else
       error.signal("Invalid character");
@@ -490,14 +490,8 @@ public class Compiler {
     return null;
   }
 
-  public LValue leftValue() {
-    if(lexer.token != Symbol.IDENT)
-      error.signal("Identifier expected");
-
-    String identifier = lexer.getStringValue();
+  public LValue leftValue(String ident) {
     ExpressionStatement expression = null;
-
-    lexer.nextToken();
 
     if(lexer.token == Symbol.LEFTBRACKET) {
       lexer.nextToken();
@@ -507,7 +501,16 @@ public class Compiler {
         error.signal("']' expected");
     }
 
-    return new LValue(identifier, expression);
+    return new LValue(ident expression);
+  }
+
+  public CallFactor call(String ident) {
+    ArrayList<Expression> actuals = actuals();
+
+    if(lexer.token != Symbol.RIGHTPAR)
+      error.signal("'(' expected");
+
+    return new CallFactor(ident, actuals);
   }
 
   public Numberino number() {
